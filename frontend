@@ -15,7 +15,6 @@ const WazifHub = () => {
   const content = {
     en: {
       hero: "Find Your Dream Job Here",
-      heroAr: "ابحث عن وظيفة أحلامك هنا",
       search: "Search jobs, companies, or skills...",
       signup: "Sign Up",
       login: "Login",
@@ -41,7 +40,6 @@ const WazifHub = () => {
     },
     ar: {
       hero: "ابحث عن وظيفة أحلامك هنا",
-      heroAr: "Find Your Dream Job Here",
       search: "ابحث عن وظائف أو شركات أو مهارات...",
       signup: "التسجيل",
       login: "تسجيل الدخول",
@@ -198,7 +196,6 @@ const WazifHub = () => {
         <div className="relative z-10 max-w-[1200px] mx-auto text-center">
           <div className="mb-12">
             <h1 className="text-[92px] leading-[0.92] font-bold tracking-[-0.05em] mb-5 text-black" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif", fontWeight: 800 }}>{t.hero}</h1>
-            <h2 className="text-[58px] leading-[1.05] font-semibold tracking-[-0.03em] text-black/30" style={{ fontFamily: "'Noto Sans Arabic', sans-serif" }}>{t.heroAr}</h2>
           </div>
 
           <div className="reduced-glass-search max-w-[750px] mx-auto mt-16 mb-24 p-3.5 rounded-[24px] flex items-center gap-4">
@@ -287,7 +284,7 @@ const WazifHub = () => {
         </div>
       </footer>
 
-      <style jsx>{`
+      <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&display=swap');
         
         * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-behavior: smooth; }
