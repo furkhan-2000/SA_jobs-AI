@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } fruseState, useEffect, useMemo } from 'react';
 import { Search, Bell, BarChart3, Shield, ArrowRight, Briefcase, Users, TrendingUp, Zap, Target, Award } from 'lucide-react';
 
 const WazifHub = () => {
@@ -7,6 +7,7 @@ const WazifHub = () => {
   const [hoveredCylinder, setHoveredCylinder] = useState(null);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -142,7 +143,7 @@ const WazifHub = () => {
         className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40 transition-all duration-500"
         style={{ opacity: scrollY > 100 ? 1 : 0, pointerEvents: scrollY > 100 ? 'auto' : 'none' }}
       >
-        <div className="reduced-glass-search w-[600px] p-3 rounded-[22px] flex items-center gap-4">
+        <div className="reduced-glass-search w-full max-w-[90vw] sm:max-w-[600px] p-3 rounded-[22px] flex items-center gap-4">
           <Search className={`w-5 h-5 text-black/40 ${isArabic ? 'mr-3' : 'ml-3'}`} strokeWidth={2} />
           <input type="text" placeholder={t.search} className="flex-1 bg-transparent outline-none text-[16px] font-medium text-black placeholder-black/30" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif" }} />
           <div className="w-11 h-11 rounded-[16px] flex items-center justify-center cursor-pointer reduced-glass-button">
@@ -195,10 +196,10 @@ const WazifHub = () => {
 
         <div className="relative z-10 max-w-[1200px] mx-auto text-center">
           <div className="mb-12">
-            <h1 className="text-[92px] leading-[0.92] font-bold tracking-[-0.05em] mb-5 text-black" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif", fontWeight: 800 }}>{t.hero}</h1>
+            <h1 className="text-[42px] sm:text-[36px] sm:text-[32px] sm:text-[40px] lg:text-[48px] lg:text-[64px] lg:text-[92px] leading-[0.92] font-bold tracking-[-0.05em] mb-5 text-black" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif", fontWeight: 800 }}>{t.hero}</h1>
           </div>
 
-          <div className="reduced-glass-search max-w-[750px] mx-auto mt-16 mb-24 p-3.5 rounded-[24px] flex items-center gap-4">
+          <div className="reduced-glass-search max-w-[90vw] sm:max-w-[750px] mx-auto mt-16 mb-24 p-3.5 rounded-[24px] flex items-center gap-4">
             <Search className={`w-6 h-6 text-black/40 ${isArabic ? 'mr-4' : 'ml-4'}`} strokeWidth={2} />
             <input type="text" placeholder={t.search} className="flex-1 bg-transparent outline-none text-[18px] font-medium text-black placeholder-black/30" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif" }} />
             <div className="w-14 h-14 rounded-[20px] flex items-center justify-center cursor-pointer reduced-glass-button">
@@ -206,7 +207,7 @@ const WazifHub = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-10 max-w-[900px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-[900px] mx-auto">
             {[{ icon: Bell, title: t.alerts }, { icon: BarChart3, title: t.analytics }, { icon: Shield, title: t.scamCheck }].map((item, i) => (
               <div key={i} className="group cursor-pointer transition-all duration-500 hover:scale-105">
                 <div className="flex flex-col items-center">
@@ -225,11 +226,11 @@ const WazifHub = () => {
       <section className="py-32 relative bg-white/40">
         <div className="max-w-[1100px] mx-auto px-8">
           <div className="text-center mb-20">
-            <h2 className="text-[64px] font-bold tracking-[-0.04em] mb-4 text-black" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif" }}>{t.features.title}</h2>
+            <h2 className="text-[36px] sm:text-[32px] sm:text-[40px] lg:text-[48px] lg:text-[64px] font-bold tracking-[-0.04em] mb-4 text-black" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif" }}>{t.features.title}</h2>
             <p className="text-[20px] text-black/40 font-medium" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif" }}>{t.features.subtitle}</p>
           </div>
           
-          <div className="grid grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-6 sm:p-10 lg:p-12">
             {t.features.items.map((feature, i) => (
               <div key={i} className="text-center">
                 <div className="circle-glass-icon w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -248,13 +249,13 @@ const WazifHub = () => {
       {/* Stats Section */}
       <section className="py-32 relative bg-gradient-to-b from-white/20 to-white/60">
         <div className="max-w-[1200px] mx-auto px-8">
-          <div className="grid grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-6 sm:p-10 lg:p-12">
             {[{ icon: Briefcase, value: "50K+", label: t.stats.jobs }, { icon: Users, value: "12K+", label: t.stats.companies }, { icon: TrendingUp, value: "94%", label: t.stats.hires }].map((stat, i) => (
               <div key={i} className="text-center">
                 <div className="circle-glass-icon w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6">
                   <stat.icon className="w-12 h-12 text-black/50" strokeWidth={1.5} />
                 </div>
-                <div className="text-[64px] font-bold mb-3 tracking-[-0.045em] text-black" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif" }}>{stat.value}</div>
+                <div className="text-[36px] sm:text-[32px] sm:text-[40px] lg:text-[48px] lg:text-[64px] font-bold mb-3 tracking-[-0.045em] text-black" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif" }}>{stat.value}</div>
                 <div className="text-[17px] font-medium tracking-[-0.01em] text-black/35" style={{ fontFamily: "'Neue Haas Grotesk Display Pro', system-ui, sans-serif" }}>{stat.label}</div>
               </div>
             ))}
@@ -313,6 +314,16 @@ const WazifHub = () => {
         ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.3); }
         ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 6px; border: 3px solid rgba(255, 255, 255, 0.5); }
         ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.25); }
+
+    /* RTL Support */
+    .rtl { direction: rtl; }
+    .ltr { direction: ltr; }
+
+    /* Mobile Optimizations */
+    @media (max-width: 640px) {
+      .cylinder-container { display: none; }
+      .blur-3xl { filter: blur(30px); }
+    }
       `}</style>
     </div>
   );
