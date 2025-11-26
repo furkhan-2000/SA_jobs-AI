@@ -52,7 +52,7 @@
     .headline::after { content:""; position:absolute; left:0; top:0; width:100%; height:100%; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.12), rgba(255,255,255,0.02)); mix-blend-mode: overlay; pointer-events:none; opacity:0.9; background-size: 200% 100%; transform: translateX(-100%); transition: transform 0.5s linear; }
     .headline:hover::after { transform: translateX(100%); }
 
-    /* ULTRA-PREMIUM MARQUEE (glow + fade edges) */
+    /* ULTRA-PREMIUM MARQUEE */
     .marquee-container {
       width: 100%;
       overflow: hidden;
@@ -142,6 +142,70 @@
     canvas { position:absolute; inset:0; z-index:5; pointer-events:none; }
     .ball { position:absolute; border-radius:50%; background: radial-gradient(circle at 30% 30%, #5e9eff, #2b6eff); transition: transform .2s ease, box-shadow .2s ease; }
     .ball.hovered { transform:translateY(-12px) scale(1.1); box-shadow:0 8px 28px rgba(0,0,0,0.18),0 16px 50px rgba(94,158,255,0.35); }
+
+    /* ULTRA PREMIUM LOGIN MODAL */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
+      display:flex; align-items:center; justify-content:center;
+      z-index:100;
+    }
+    .modal {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border:1px solid rgba(255,255,255,0.35);
+      border-radius:32px;
+      padding:32px 24px;
+      width:320px;
+      max-width:90%;
+      box-shadow:0 12px 36px rgba(0,0,0,0.2);
+      display:flex; flex-direction:column; gap:16px;
+    }
+    .modal input {
+      padding:12px 14px;
+      border-radius:16px;
+      border:none;
+      outline:none;
+      font-size:14px;
+      background: rgba(255,255,255,0.15);
+      color:#111; /* DARK GREY FOR BETTER READABILITY */
+      backdrop-filter: blur(12px);
+      transition: all 0.2s ease;
+    }
+    .modal input:focus {
+      background: rgba(255,255,255,0.25);
+      box-shadow:0 4px 20px rgba(6,11,23,0.25);
+    }
+    .modal button {
+      padding:12px;
+      border-radius:20px;
+      border:none;
+      font-weight:700;
+      background:linear-gradient(135deg,#0b1228 0%,#14182a 100%);
+      color:white;
+      cursor:pointer;
+      transition: all 0.2s ease;
+    }
+    .modal button:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:0 14px 40px rgba(6,11,23,0.3);
+    }
+    .modal .signup-link {
+      text-align:center;
+      margin-top:8px;
+      font-size:13px;
+      font-weight:500;
+      color:#041227;
+      opacity:0.8;
+      cursor:pointer;
+      transition: all 0.2s ease;
+    }
+    .modal .signup-link:hover {
+      opacity:1;
+      text-decoration:underline;
+    }
   </style>
 </head>
 
@@ -178,7 +242,7 @@
 
     useEffect(()=>{
       let raf=null;
-      const animate=()=>{
+      const animate=()=>{ 
         balls.current.forEach(b=>{
           b.x += b.vx + scroll*0.0005;
           b.y += b.vy;
@@ -218,6 +282,7 @@
 
   function App() {
     const [isArabic,setIsArabic]=useState(false);
+    const [showLogin,setShowLogin] = useState(false);
     const scroll = useSmoothScroll();
     const ctaRef = useRef(null);
 
@@ -283,10 +348,20 @@
           </div>
           <div>
             <button onClick={()=>setIsArabic(a=>!a)}>{isArabic?'English':'عربي'}</button>
-            <span className="nav-link" onClick={()=>alert('Login Clicked')}>{t.login}</span>
-            <span className="nav-link" style={{fontWeight:700}} onClick={()=>alert('Sign Up Clicked')}>{t.signup}</span>
+            <span className="nav-link" style={{fontWeight:700}} onClick={()=>setShowLogin(true)}>{t.login}</span>
           </div>
         </nav>
+
+        {showLogin && 
+          <div className="modal-backdrop" onClick={()=>setShowLogin(false)}>
+            <div className="modal" onClick={e=>e.stopPropagation()}>
+              <input placeholder="ID / Email" type="text"/>
+              <input placeholder="Password" type="password"/>
+              <button onClick={()=>alert('Login Clicked')}>Login</button>
+              <div className="signup-link" onClick={()=>alert('Sign Up Clicked')}>Sign Up</div>
+            </div>
+          </div>
+        }
 
         <section className="hero">
           <h1 className="headline">{t.hero}</h1>
@@ -305,12 +380,10 @@
         </section>
 
         <section className="feature-section">
-          {t.features.map((f,i)=>(
-            <div key={i} className="feature-card">
-              <h3 style={{fontWeight:700,fontSize:20}}>{f.title}</h3>
-              <p style={{marginTop:6,color:'#041227',opacity:.8}}>{f.desc}</p>
-            </div>
-          ))}
+          {t.features.map((f,i)=>(<div key={i} className="feature-card">
+            <h3 style={{fontWeight:700,fontSize:20}}>{f.title}</h3>
+            <p style={{marginTop:6,color:'#041227',opacity:.8}}>{f.desc}</p>
+          </div>))}
         </section>
 
         <div className="footer-above">{t.footerAbove}</div>
