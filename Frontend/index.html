@@ -8,6 +8,7 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
     body, html, #root { height: 100%; margin: 0; font-family: Inter, sans-serif; background: #f3f6fb; overflow-x:hidden; }
 
@@ -48,90 +49,24 @@
 
     /* HERO */
     .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; position:relative; padding:120px 20px 80px; }
+
     .headline { font-weight:800; font-size:clamp(40px,6vw,80px); position:relative; margin-bottom:16px; color:#041227; cursor:pointer; }
     .headline::after { content:""; position:absolute; left:0; top:0; width:100%; height:100%; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.12), rgba(255,255,255,0.02)); mix-blend-mode: overlay; pointer-events:none; opacity:0.9; background-size: 200% 100%; transform: translateX(-100%); transition: transform 0.5s linear; }
     .headline:hover::after { transform: translateX(100%); }
+    .headline span.blue { color:#5e9eff; } 
 
-    /* ULTRA-PREMIUM MARQUEE */
-    .marquee-container {
-      width: 100%;
-      overflow: hidden;
-      margin-top: 10px;
-      position: relative;
-      -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 12%, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%);
-      mask-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 12%, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%);
-    }
-    .marquee-text {
-      display: inline-block;
-      white-space: nowrap;
-      font-size: clamp(20px,3vw,28px);
-      font-weight: 600;
-      color: #041227;
-      opacity: 0.95;
-      padding: 6px 0;
-      text-shadow: 0 2px 8px rgba(10,75,255,0.06), 0 0 18px rgba(10,75,255,0.03);
-      animation: marqueeSlide 16s linear infinite;
-      will-change: transform;
-      transform: translate3d(0,0,0);
-    }
-    @keyframes marqueeSlide {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
+    .marquee-container { width: 100%; overflow: hidden; margin-top: 10px; position: relative; -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 12%, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 12%, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%); }
+    .marquee-text { display: inline-block; white-space: nowrap; font-size: clamp(20px,3vw,28px); font-weight: 600; color: #041227; opacity: 0.95; padding: 6px 0; text-shadow: 0 2px 8px rgba(10,75,255,0.06), 0 0 18px rgba(10,75,255,0.03); animation: marqueeSlide 16s linear infinite; will-change: transform; transform: translate3d(0,0,0); }
+    @keyframes marqueeSlide { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-    /* ULTRA-THIN SLIM SEARCH BAR */
-    .search-bar {
-      display:flex;
-      align-items:center;
-      gap:6px;
-      margin-top:20px;
-      background: rgba(255,255,255,0.18);
-      backdrop-filter: blur(28px) saturate(180%);
-      -webkit-backdrop-filter: blur(28px) saturate(180%);
-      border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 32px;
-      padding: 4px 10px;
-      box-shadow: inset 0 0 8px rgba(255,255,255,0.25), 0 4px 16px rgba(0,0,0,0.06);
-      transition: all 0.3s ease;
-      width: fit-content;
-      min-width: 220px;
-      max-width: 300px;
-    }
-    .search-bar:hover {
-      background: rgba(255,255,255,0.22);
-      box-shadow: inset 0 0 10px rgba(255,255,255,0.35), 0 6px 20px rgba(0,0,0,0.08);
-    }
-    .search-bar input {
-      border:none;
-      outline:none;
-      background:transparent;
-      font-size:14px;
-      width:100%;
-      color:#041227;
-      padding:4px 0;
-    }
-    .cta-button {
-      margin-left:6px;
-      padding:5px 10px;
-      border-radius:20px;
-      font-weight:700;
-      background:linear-gradient(135deg,#0b1228 0%,#14182a 100%);
-      color:white;
-      box-shadow:0 10px 40px rgba(6,11,23,0.25);
-      cursor:pointer;
-      font-size:14px;
-      transition:all .18s ease;
-    }
-    .cta-button:hover {
-      transform:translateY(-2px) scale(1.02);
-      box-shadow:0 14px 50px rgba(6,11,23,0.3);
-    }
+    /* SEARCH BAR */
+    .search-bar { display:flex; align-items:center; gap:8px; margin-top:20px; background: rgba(255,255,255,0.12); backdrop-filter: blur(34px) saturate(200%); -webkit-backdrop-filter: blur(34px) saturate(200%); border: 1px solid rgba(255,255,255,0.28); border-radius: 28px; padding: 3px 10px; box-shadow: inset 0 0 18px rgba(255,255,255,0.30), 0 10px 28px rgba(0,0,0,0.08); transition: all 0.28s ease; width: fit-content; min-width: 220px; max-width: 320px; height: 42px; }
+    .search-bar:hover { background: rgba(255,255,255,0.18); box-shadow: inset 0 0 22px rgba(255,255,255,0.4), 0 14px 36px rgba(0,0,0,0.10); transform: translateY(-1px); }
+    .search-bar input { border:none; outline:none; background:transparent; font-size:13px; width:100%; color:#041227; padding:0; height:100%; line-height:42px; }
+    .cta-button { margin-left:6px; padding:5px 10px; border-radius:20px; font-weight:700; background:linear-gradient(135deg,#0b1228 0%,#14182a 100%); color:white; box-shadow:0 10px 40px rgba(6,11,23,0.25); cursor:pointer; font-size:14px; transition:all .18s ease; }
+    .cta-button:hover { transform:translateY(-2px) scale(1.02); box-shadow:0 14px 50px rgba(6,11,23,0.3); }
 
-    @media (max-width: 768px) {
-      .search-bar { min-width:180px; max-width:260px; padding:3px 8px; }
-      .search-bar input { font-size:13px; }
-      .cta-button { padding:4px 8px; font-size:13px; }
-    }
+    @media (max-width: 768px) { .search-bar { min-width:180px; max-width:260px; padding:3px 8px; height:40px; } .search-bar input { font-size:13px; } .cta-button { padding:4px 8px; font-size:13px; } }
 
     .feature-section { padding:60px 20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; max-width:1100px; margin:0 auto; }
     .feature-card { background:rgba(255,255,255,0.85); padding:20px; border-radius:16px; box-shadow:0 12px 36px rgba(0,0,0,0.06); text-align:center; }
@@ -139,73 +74,29 @@
     .footer { padding:24px 16px; text-align:center; color:#041227; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-top:1px solid rgba(0,0,0,0.03); font-size:14px; line-height:1.6; }
     .footer-above { margin-bottom:12px; font-weight:500; opacity:0.85; text-align:center; }
 
-    canvas { position:absolute; inset:0; z-index:5; pointer-events:none; }
-    .ball { position:absolute; border-radius:50%; background: radial-gradient(circle at 30% 30%, #5e9eff, #2b6eff); transition: transform .2s ease, box-shadow .2s ease; }
-    .ball.hovered { transform:translateY(-12px) scale(1.1); box-shadow:0 8px 28px rgba(0,0,0,0.18),0 16px 50px rgba(94,158,255,0.35); }
+    /* ICE OVERLAY */
+    .ice-overlay {
+      position:absolute;
+      inset:0;
+      z-index:80;
+      background: rgba(255,255,255,0.35);
+      backdrop-filter: blur(16px) saturate(180%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      transition: all 1s ease;
+    }
+    .ice-overlay.melt {
+      background: rgba(255,255,255,0);
+      backdrop-filter: blur(0px);
+      pointer-events:none;
+    }
+    .ice-overlay input { 
+      border:none; outline:none; background:rgba(255,255,255,0.12); padding:12px 16px; border-radius:24px; width:250px; font-size:14px; backdrop-filter: blur(16px) saturate(180%);
+    }
+    .ice-overlay button { margin-left:12px; padding:10px 14px; border-radius:20px; border:none; font-weight:700; background:linear-gradient(135deg,#0b1228 0%,#14182a 100%); color:white; cursor:pointer; }
 
-    /* ULTRA PREMIUM LOGIN MODAL */
-    .modal-backdrop {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.3);
-      backdrop-filter: blur(8px);
-      display:flex; align-items:center; justify-content:center;
-      z-index:100;
-    }
-    .modal {
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border:1px solid rgba(255,255,255,0.35);
-      border-radius:32px;
-      padding:32px 24px;
-      width:320px;
-      max-width:90%;
-      box-shadow:0 12px 36px rgba(0,0,0,0.2);
-      display:flex; flex-direction:column; gap:16px;
-    }
-    .modal input {
-      padding:12px 14px;
-      border-radius:16px;
-      border:none;
-      outline:none;
-      font-size:14px;
-      background: rgba(255,255,255,0.15);
-      color:#111; /* DARK GREY FOR BETTER READABILITY */
-      backdrop-filter: blur(12px);
-      transition: all 0.2s ease;
-    }
-    .modal input:focus {
-      background: rgba(255,255,255,0.25);
-      box-shadow:0 4px 20px rgba(6,11,23,0.25);
-    }
-    .modal button {
-      padding:12px;
-      border-radius:20px;
-      border:none;
-      font-weight:700;
-      background:linear-gradient(135deg,#0b1228 0%,#14182a 100%);
-      color:white;
-      cursor:pointer;
-      transition: all 0.2s ease;
-    }
-    .modal button:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow:0 14px 40px rgba(6,11,23,0.3);
-    }
-    .modal .signup-link {
-      text-align:center;
-      margin-top:8px;
-      font-size:13px;
-      font-weight:500;
-      color:#041227;
-      opacity:0.8;
-      cursor:pointer;
-      transition: all 0.2s ease;
-    }
-    .modal .signup-link:hover {
-      opacity:1;
-      text-decoration:underline;
-    }
   </style>
 </head>
 
@@ -213,189 +104,158 @@
   <div id="root"></div>
 
   <script type="text/babel">
-  const { useState, useEffect, useRef } = React;
+    const { useState, useEffect, useRef } = React;
 
-  function useSmoothScroll() {
-    const [scroll, setScroll] = useState(0);
-    useEffect(()=>{
-      const onScroll=()=>setScroll(window.scrollY);
-      window.addEventListener('scroll',onScroll,{passive:true});
-      return ()=>window.removeEventListener('scroll',onScroll);
-    },[]);
-    return scroll;
-  }
+    function useSmoothScroll() {
+      const [scroll, setScroll] = useState(0);
+      useEffect(()=>{
+        const onScroll=()=>setScroll(window.scrollY);
+        window.addEventListener('scroll',onScroll,{passive:true});
+        return ()=>window.removeEventListener('scroll',onScroll);
+      },[]);
+      return scroll;
+    }
 
-  function Balls({ count=30 }) {
-    const containerRef = useRef(null);
-    const [hoveredId, setHoveredId] = useState(null);
-    const scroll = useSmoothScroll();
+    function App() {
+      const [isArabic,setIsArabic]=useState(false);
+      const [showLogin,setShowLogin] = useState(false);
+      const [showPassword, setShowPassword] = useState(false);
+      const [iceMelt, setIceMelt] = useState(false);
+      const scroll = useSmoothScroll();
+      const ctaRef = useRef(null);
 
-    const balls = useRef(Array.from({length:count}, (_,i)=>({
-      id:i,
-      size: 40 + Math.random()*30,
-      x: Math.random()*window.innerWidth,
-      y: Math.random()*window.innerHeight,
-      vx: (Math.random()-0.5)*0.6,
-      vy: (Math.random()-0.5)*0.6,
-      hue: Math.random()*360
-    })));
-
-    useEffect(()=>{
-      let raf=null;
-      const animate=()=>{ 
-        balls.current.forEach(b=>{
-          b.x += b.vx + scroll*0.0005;
-          b.y += b.vy;
-          if(b.x<-50) b.x=window.innerWidth+50;
-          if(b.x>window.innerWidth+50) b.x=-50;
-          if(b.y<-50) b.y=window.innerHeight+50;
-          if(b.y>window.innerHeight+50) b.y=-50;
-          const el = containerRef.current.querySelector(`#ball-${b.id}`);
-          if(el){
-            el.style.transform=`translate(${b.x}px,${b.y}px) scale(${hoveredId===b.id?1.1:1})`;
-            el.style.boxShadow = hoveredId===b.id ? 
-              "0 8px 28px rgba(0,0,0,0.18),0 16px 50px hsla("+b.hue+",70%,55%,0.35)" : 
-              "0 4px 18px rgba(0,0,0,0.08)";
-          }
-        });
-        raf = requestAnimationFrame(animate);
-      };
-      raf=requestAnimationFrame(animate);
-      return ()=> cancelAnimationFrame(raf);
-    },[hoveredId,scroll]);
-
-    return (
-      <div ref={containerRef} aria-hidden>
-        {balls.current.map(b=>(
-          <div
-            key={b.id}
-            id={`ball-${b.id}`}
-            className={`ball ${hoveredId===b.id?'hovered':''}`}
-            style={{width:b.size,height:b.size,left:0,top:0}}
-            onMouseEnter={()=>setHoveredId(b.id)}
-            onMouseLeave={()=>setHoveredId(null)}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  function App() {
-    const [isArabic,setIsArabic]=useState(false);
-    const [showLogin,setShowLogin] = useState(false);
-    const scroll = useSmoothScroll();
-    const ctaRef = useRef(null);
-
-    const content = {
-      en:{ hero:"Find Your Dream Job Here", marquee:"For Saudi nationals ~ Creating opportunities, building futures, driving Vision 2030.",
-        search:"Search jobs, companies, or skills...", signup:"Sign Up", login:"Login",
-        features:[
-          {title:"Smart Matching",desc:"Get AI-powered job recommendations tailored for your skills and goals."},
-          {title:"Real-Time Alerts",desc:"Receive instant updates on job matches and career tips."},
-          {title:"AI Scam Detection",desc:"Stay protected: our advanced system flags fake or scam job posts and companies—trusted by Saudis."},
-          {title:"Intelligent job sourcing across platforms",
-           desc:"Our AI engine continuously scans and aggregates job listings from trusted Saudi job portals, ensuring that only relevant opportunities for Saudi nationals are displayed in one unified platform."},
-          {title:"Trusted NIKAT Compliance Check",
-           desc:"Every job and company listing is verified through the official NIKAT system, guaranteeing compliance with Saudi regulations and authenticity before it reaches our users."}
-        ],
-        cta:"Get Started", footer:"© 2025 WazifHub. Premium job portal experience.",
-        footerAbove:"Empowering Saudi talent with real opportunities — Proudly supporting Vision 2030"
-      },
-      ar:{ hero:"ابحث عن وظيفة أحلامك هنا", marquee:"للسعوديين ~ نصنع الفرص، ونبني المستقبل، وندعم رؤية 2030.",
-        search:"ابحث عن وظائف أو شركات أو مهارات...", signup:"التسجيل", login:"تسجيل الدخول",
-        features:[
-          {title:"المطابقة الذكية",desc:"احصل على توصيات وظائف مدعومة بالذكاء الاصطناعي وفق مهاراتك وأهدافك."},
-          {title:"تنبيهات فورية",desc:"احصل على إشعارات فورية حول وظائف مطابقة ونصائح مهنية."},
-          {title:"كشف الاحتيال بالذكاء الاصطناعي",desc:"ابق آمناً: نظامنا المتقدم يحدد الوظائف والشركات الوهمية — موثوق للسعوديين."},
-          {title:"استخلاص ذكي للوظائف من المنصات",
-           desc:"يقوم محرك الذكاء الاصطناعي لدينا بمسح وتجميع الوظائف من منصات التوظيف السعودية الموثوقة لضمان عرض الفرص المناسبة فقط للسعوديين في منصة موحدة."},
-          {title:"التحقق الموثوق من نظام نطاقات",
-           desc:"يتم التحقق من كل وظيفة وكل شركة عبر نظام نطاقات الرسمي لضمان التزامها بأنظمة السعودية قبل وصولها للمستخدم."}
-        ],
-        cta:"ابدأ", footer:"© 2025 وظيف هب. تجربة بوابة وظائف متميزة.",
-        footerAbove:"تمكين المواهب السعودية بفرص حقيقية — دعم فخور لرؤية 2030"
-      }
-    };
-
-    const t = content[isArabic?'ar':'en'];
-
-    useEffect(()=>{
-      const el = ctaRef.current;
-      if(!el) return;
-      const move = e=>{
-        const r = el.getBoundingClientRect();
-        const cx=r.left+r.width/2;
-        const cy=r.top+r.height/2;
-        const dx=e.clientX-cx;
-        const dy=e.clientY-cy;
-        const dist=Math.sqrt(dx*dx+dy*dy);
-        const max=120;
-        if(dist<max){
-          const strength=1-(dist/max);
-          el.style.transform=`translate(${dx*0.02*strength}px,${dy*0.02*strength}px) scale(${1+0.02*strength})`;
-        } else el.style.transform='';
-      };
-      window.addEventListener('mousemove',move);
-      return ()=>window.removeEventListener('mousemove',move);
-    },[]);
-
-    return (
-      <div>
-        <nav className="nav">
-          <div className="logo" onClick={()=>window.location.reload()}>
-            <div className="dot-w">{Array.from({length:8}).map((_,i)=><span key={i}></span>)}</div>
-            WazifHub
-          </div>
-          <div>
-            <button onClick={()=>setIsArabic(a=>!a)}>{isArabic?'English':'عربي'}</button>
-            <span className="nav-link" style={{fontWeight:700}} onClick={()=>setShowLogin(true)}>{t.login}</span>
-          </div>
-        </nav>
-
-        {showLogin && 
-          <div className="modal-backdrop" onClick={()=>setShowLogin(false)}>
-            <div className="modal" onClick={e=>e.stopPropagation()}>
-              <input placeholder="ID / Email" type="text"/>
-              <input placeholder="Password" type="password"/>
-              <button onClick={()=>alert('Login Clicked')}>Login</button>
-              <div className="signup-link" onClick={()=>alert('Sign Up Clicked')}>Sign Up</div>
-            </div>
-          </div>
+      const content = {
+        en:{ heroParts: ["Find Your Drea", "m", " Job Here"], marquee:"For Saudi nationals ~ Creating opportunities, building futures, driving Vision 2030.",
+          search:"Search jobs, companies, or skills...", signup:"Sign Up", login:"Login",
+          features:[
+            {title:"Smart Matching",desc:"Get AI-powered job recommendations tailored for your skills and goals."},
+            {title:"Real-Time Alerts",desc:"Receive instant updates on job matches and career tips."},
+            {title:"AI Scam Detection",desc:"Stay protected: our advanced system flags fake or scam job posts and companies—trusted by Saudis."},
+            {title:"Intelligent job sourcing across platforms",desc:"Our AI engine continuously scans and aggregates job listings from trusted Saudi job portals, ensuring that only relevant opportunities for Saudi nationals are displayed in one unified platform."},
+            {title:"Trusted NIKAT Compliance Check",desc:"Every job and company listing is verified through the official NIKAT system, guaranteeing compliance with Saudi regulations and authenticity before it reaches our users."}
+          ],
+          cta:"Get Started", footer:"© 2025 WazifHub. Premium job portal experience.", footerAbove:"Empowering Saudi talent with real opportunities — Proudly supporting Vision 2030"
+        },
+        ar:{ hero:"ابحث عن وظيفة أحلامك هنا", marquee:"للسعوديين ~ نصنع الفرص، ونبني المستقبل، وندعم رؤية 2030.",
+          search:"ابحث عن وظائف أو شركات أو مهارات...", signup:"التسجيل", login:"تسجيل الدخول",
+          features:[
+            {title:"المطابقة الذكية",desc:"احصل على توصيات وظائف مدعومة بالذكاء الاصطناعي وفق مهاراتك وأهدافك."},
+            {title:"تنبيهات فورية",desc:"احصل على إشعارات فورية حول وظائف مطابقة ونصائح مهنية."},
+            {title:"كشف الاحتيال بالذكاء الاصطناعي",desc:"ابق آمناً: نظامنا المتقدم يحدد الوظائف والشركات الوهمية — موثوق للسعوديين."},
+            {title:"استخلاص ذكي للوظائف من المنصات",desc:"يقوم محرك الذكاء الاصطناعي لدينا بمسح وتجميع الوظائف من منصات التوظيف السعودية الموثوقة لضمان عرض الفرص المناسبة فقط للسعوديين في منصة موحدة."},
+            {title:"التحقق الموثوق من نظام نطاقات",desc:"يتم التحقق من كل وظيفة وكل شركة عبر نظام نطاقات الرسمي لضمان التزامها بأنظمة السعودية قبل وصولها للمستخدم."}
+          ],
+          cta:"ابدأ", footer:"© 2025 وظيف هب. تجربة بوابة وظائف متميزة.", footerAbove:"تمكين المواهب السعودية بفرص حقيقية — دعم فخور لرؤية 2030"
         }
+      };
 
-        <section className="hero">
-          <h1 className="headline">{t.hero}</h1>
+      const t = isArabic ? content.ar : content.en;
 
-          <div className="marquee-container" aria-hidden>
-            <div className="marquee-text">{t.marquee}</div>
-          </div>
+      useEffect(()=>{
+        const el = ctaRef.current;
+        if(!el) return;
+        const move = e=>{
+          const r = el.getBoundingClientRect();
+          const cx=r.left+r.width/2;
+          const cy=r.top+r.height/2;
+          const dx=e.clientX-cx;
+          const dy=e.clientY-cy;
+          const dist=Math.sqrt(dx*dx+dy*dy);
+          const max=120;
+          if(dist<max){
+            const strength=1-(dist/max);
+            el.style.transform=`translate(${dx*0.02*strength}px,${dy*0.02*strength}px) scale(${1+0.02*strength})`;
+          } else el.style.transform='';
+        };
+        window.addEventListener('mousemove',move);
+        return ()=>window.removeEventListener('mousemove',move);
+      },[]);
 
-          <div className="search-bar" style={{transform:`translateY(${scroll*0.3}px)`}}>
-            <span>🔍</span>
-            <input placeholder={t.search}/>
-            <button ref={ctaRef} className="cta-button">{t.cta}</button>
-          </div>
+      const handleIceEnter = (e) => {
+        if(e.key === "Enter") setIceMelt(true);
+      }
 
-          <Balls count={30}/>
-        </section>
+      return (
+        <div>
+          <nav className="nav" role="navigation" aria-label="Main Navigation">
+            <div className="logo" onClick={()=>window.location.reload()}>
+              <div className="dot-w" aria-hidden>{Array.from({length:8}).map((_,i)=><span key={i}></span>)}</div>
+              WazifHub
+            </div>
+            <div>
+              <button onClick={()=>setIsArabic(a=>!a)} aria-pressed={isArabic}>{isArabic ? 'English' : 'عربي'}</button>
+              <span className="nav-link" style={{fontWeight:700}} onClick={()=>setShowLogin(true)}>{t.login}</span>
+            </div>
+          </nav>
 
-        <section className="feature-section">
-          {t.features.map((f,i)=>(<div key={i} className="feature-card">
-            <h3 style={{fontWeight:700,fontSize:20}}>{f.title}</h3>
-            <p style={{marginTop:6,color:'#041227',opacity:.8}}>{f.desc}</p>
-          </div>))}
-        </section>
+          {showLogin && 
+            <div className="modal-backdrop" onClick={()=>setShowLogin(false)} role="dialog" aria-modal="true">
+              <div className="modal" onClick={e=>e.stopPropagation()}>
+                <input placeholder={isArabic ? "المعرف / البريد الإلكتروني" : "ID / Email"} type="text" aria-label="ID or email"/>
+                <div className="password-wrapper">
+                  <input placeholder={isArabic ? "كلمة المرور" : "Password"} type={showPassword ? "text":"password"} aria-label="Password"/>
+                  <svg onClick={()=>setShowPassword(s=>!s)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" role="img" aria-label={showPassword ? "Hide password" : "Show password"}>
+                    {showPassword ? 
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.96 9.96 0 012.634-6.788M15 12a3 3 0 11-6 0 3 3 0 016 0z" /> :
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7zM12 12a3 3 0 100-6 3 3 0 000 6z" />
+                    }
+                  </svg>
+                </div>
+                <button onClick={()=>{ alert(isArabic ? 'تم النقر تسجيل الدخول' : 'Login Clicked'); }}>Login</button>
+                <div className="signup-link" onClick={()=>alert(isArabic ? 'تم النقر تسجيل' : 'Sign Up Clicked')}>{isArabic ? 'التسجيل' : 'Sign Up'}</div>
+              </div>
+            </div>
+          }
 
-        <div className="footer-above">{t.footerAbove}</div>
-        <footer className="footer">
-          Designed & Developed ~ <a href="https://www.linkedin.com/in/khan-mohammed-790b18214" target="_blank">www.linkedin.com/in/khan-mohammed-790b18214</a><br/>
-          © 2025 Furkhan | Vision 2030
-        </footer>
-      </div>
-    );
-  }
+          <section className="hero" aria-labelledby="hero-heading">
+            <h1 id="hero-heading" className="headline">
+              {!isArabic ? (
+                <>
+                  {t.heroParts[0]}<span className="blue">{t.heroParts[1]}</span>{t.heroParts[2].split(' Job Here')[0]}
+                  <span className="blue"> Job Here</span>
+                </>
+              ) : t.hero}
+            </h1>
 
-  ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+            <div className="marquee-container" aria-hidden>
+              <div className="marquee-text">{t.marquee}</div>
+            </div>
+
+            <div className="search-bar" style={{transform:`translateY(${scroll*0.3}px)`}}>
+              <span aria-hidden>🔍</span>
+              <input placeholder={t.search}/>
+              <button ref={ctaRef} className="cta-button" onClick={()=>setShowLogin(true)}>{t.cta}</button>
+            </div>
+
+            {/* ICE OVERLAY */}
+            {!iceMelt && (
+              <div className={`ice-overlay`}>
+                <div style={{display:'flex', alignItems:'center'}}>
+                  <input placeholder={t.search} onKeyDown={handleIceEnter}/>
+                  <button onClick={()=>setIceMelt(true)}>{t.cta}</button>
+                </div>
+              </div>
+            )}
+
+          </section>
+
+          <section className="feature-section" aria-label="features">
+            {t.features.map((f,i)=>(<div key={i} className="feature-card">
+              <h3 style={{fontWeight:700,fontSize:20}}>{f.title}</h3>
+              <p style={{marginTop:6,color:'#041227',opacity:.8}}>{f.desc}</p>
+            </div>))}
+          </section>
+
+          <div className="footer-above">{t.footerAbove}</div>
+          <footer className="footer">
+            Designed & Developed ~ <a href="https://www.linkedin.com/in/khan-mohammed-790b18214" target="_blank" rel="noopener noreferrer">www.linkedin.com/in/khan-mohammed-790b18214</a><br/>
+            © 2025 Furkhan | Vision 2030
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
   </script>
 </body>
 </html>
