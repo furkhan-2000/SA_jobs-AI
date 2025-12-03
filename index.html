@@ -8,7 +8,7 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/amazon-cognito-identity-js/dist/amazon-cognito-identity.min.js"></script>
+  <script src="https://unpkg.com/aws-amplify/dist/aws-amplify.min.js"></script>
 
   <style>
     body, html, #root { height: 100%; margin: 0; font-family: Inter, sans-serif; background: #e8edf5; }
@@ -367,12 +367,15 @@
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
+    const { Auth, Amplify } = aws_amplify;
 
-    // Configure AWS Cognito
-    const cognitoConfig = {
-      UserPoolId: "YOUR_USER_POOL_ID", // <-- e.g., "us-east-1_XXXXXXXXX"
-      ClientId: "YOUR_USER_POOL_WEB_CLIENT_ID", // <-- e.g., "XXXXXXXXXXXXXXXXXXXXXXXXXX"
-    };
+    Amplify.configure({
+      Auth: {
+        region: "us-east-1",
+        userPoolId: "us-east-1_y12o1s5ao",
+        userPoolWebClientId: "2jcm35pd0k4sc9tsjgqh8kesgb",
+      }
+    });
 
     function App() {
       const [isArabic,setIsArabic]=useState(false);
@@ -380,6 +383,8 @@
       const [showPassword, setShowPassword] = useState(false);
       const [username, setUsername] = useState("");
       const [password, setPassword] = useState("");
+      const [error, setError] = useState(null);
+      const [isLoading, setIsLoading] = useState(false);
 
       const [iceVisible, setIceVisible] = useState(true);
       const [iceMelt, setIceMelt] = useState(false);
@@ -409,41 +414,19 @@
       }, []);
 
       const handleLogin = async () => {
-        if (!window.AmazonCognitoIdentity) {
-          alert("Cognito library is not loaded correctly.");
-          return;
+        setError(null);
+        setIsLoading(true);
+        try {
+          const user = await Auth.signIn(username, password);
+          console.log('Authentication successful:', user);
+          alert('Login Successful!');
+          setShowLogin(false);
+        } catch (err) {
+          console.error('Error signing in:', err);
+          setError(err.message || JSON.stringify(err));
+        } finally {
+          setIsLoading(false);
         }
-
-        const { CognitoUserPool, CognitoUser, AuthenticationDetails } = window.AmazonCognitoIdentity;
-
-        const userPool = new CognitoUserPool({
-          UserPoolId: cognitoConfig.UserPoolId,
-          ClientId: cognitoConfig.ClientId,
-        });
-
-        const cognitoUser = new CognitoUser({
-          Username: username,
-          Pool: userPool,
-        });
-
-        const authenticationDetails = new AuthenticationDetails({
-          Username: username,
-          Password: password,
-        });
-
-        cognitoUser.authenticateUser(authenticationDetails, {
-          onSuccess: (result) => {
-            console.log("Authentication successful:", result);
-            const idToken = result.getIdToken().getJwtToken();
-            // You can now use the idToken for authenticated requests
-            alert("Login Successful!");
-            setShowLogin(false);
-          },
-          onFailure: (err) => {
-            console.error("Error signing in:", err);
-            alert(`Login Failed: ${err.message || JSON.stringify(err)}`);
-          },
-        });
       };
 
       const content = {
@@ -538,7 +521,10 @@
                     }
                   </svg>
                 </div>
-                <button onClick={handleLogin}>Login</button>
+                {error && <p style={{ color: '#b91c1c', textAlign: 'center', fontWeight: '600', paddingBottom: '10px' }}>{error}</p>}
+                <button onClick={handleLogin} disabled={isLoading}>
+                  {isLoading ? (isArabic ? 'جارٍ تسجيل الدخول...' : 'Logging in...') : t.login}
+                </button>
                 <div className="signup-link" onClick={()=>alert(isArabic ? 'تم النقر تسجيل' : 'Sign Up Clicked')}>{isArabic ? 'التسجيل' : 'Sign Up'}</div>
               </div>
             </div>
