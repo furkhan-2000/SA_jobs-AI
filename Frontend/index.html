@@ -3,487 +3,430 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WazifHub — Ultra Premium Hero</title>
+  <title>WazifHub</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/amazon-cognito-identity-js/dist/amazon-cognito-identity.min.js"></script>
 
   <style>
-    body, html, #root { height: 100%; margin: 0; font-family: Inter, sans-serif; background: #f3f6fb; overflow-x:hidden; }
+    body, html, #root { height: 100%; margin: 0; font-family: Inter, sans-serif; background: #e8edf5; }
 
-    /* ================= ULTRA-LUX LOGIN MODAL (iPhone 17 Pro Glass) ================= */
+    /* ================= APPLE VISION PRO / iPhone 17 GLASS UI REIMAGINED ================= */
+
+    /* Universal Glass Properties */
+    .glass-ui {
+      backdrop-filter: blur(35px) saturate(140%) brightness(1.2);
+      -webkit-backdrop-filter: blur(35px) saturate(140%) brightness(1.2);
+      background: linear-gradient(165deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow:
+        0 25px 50px -10px rgba(0, 0, 0, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.5),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-ui::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      opacity: 0.7;
+    }
+    .glass-ui::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -200%;
+      width: 150%;
+      height: 200%;
+      transform: skewX(-25deg);
+      background-image: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08), transparent);
+      transition: left 1s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .glass-ui:hover::after {
+      left: 200%;
+    }
+
+    /* Login Modal */
     .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 9998;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(28px) saturate(180%);
-      -webkit-backdrop-filter: blur(28px) saturate(180%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: fadeIn 0.35s ease;
+      position: fixed; inset: 0; z-index: 9998;
+      background: rgba(10, 20, 35, 0.3);
+      backdrop-filter: blur(32px) saturate(180%);
+      -webkit-backdrop-filter: blur(32px) saturate(180%);
+      display: flex; align-items: center; justify-content: center;
+      animation: fadeIn 0.6s ease-out;
     }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     .modal {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
-      backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
-      -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.1);
-      border-radius: 32px;
-      padding: 28px 32px;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      box-shadow: 
-        0 30px 80px rgba(0, 0, 0, 0.4),
-        0 8px 32px rgba(0, 0, 0, 0.2),
-        inset 0 1px 1px rgba(255, 255, 255, 0.3),
-        inset 0 -1px 1px rgba(0, 0, 0, 0.05);
-      min-width: 340px;
-      max-width: 420px;
-      width: 90%;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      overflow: hidden;
+      /* Inherits from .glass-ui but with overrides */
+      border-radius: 24px;
+      padding: 32px 36px;
+      min-width: 360px; max-width: 420px; width: 90%;
+      display: flex; flex-direction: column; gap: 20px;
+      animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .modal::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    }
-    @keyframes slideUp { 
-      from { opacity: 0; transform: translateY(30px) scale(0.96); } 
-      to { opacity: 1; transform: translateY(0) scale(1); } 
-    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(50px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
     .modal input {
-      padding: 14px 18px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 18px;
-      font-size: 14px;
+      padding: 18px 22px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 22px;
+      font-size: 16px;
       font-weight: 500;
       outline: none;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      color: #041227;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #000;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
     }
-    .modal input::placeholder {
-      color: rgba(4, 18, 39, 0.5);
-    }
+    .modal input::placeholder { color: rgba(17, 24, 39, 0.5); font-weight: 400; }
     .modal input:focus {
-      border-color: rgba(94, 158, 255, 0.5);
-      background: rgba(255, 255, 255, 0.12);
-      box-shadow: 
-        0 0 0 4px rgba(94, 158, 255, 0.08),
-        inset 0 1px 3px rgba(0, 0, 0, 0.05);
-      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.25),
+        inset 0 2px 8px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
     }
 
-    .password-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    .password-wrapper input {
-      width: 100%;
-      padding-right: 48px;
-    }
-    .password-wrapper svg {
-      position: absolute;
-      right: 14px;
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      color: rgba(4, 18, 39, 0.6);
-      transition: all 0.2s ease;
-    }
-    .password-wrapper svg:hover {
-      color: #041227;
-      transform: scale(1.1);
-    }
+    .password-wrapper { position: relative; display: flex; align-items: center; }
+    .password-wrapper input { width: 100%; padding-right: 50px; }
+    .password-wrapper svg { position: absolute; right: 24px; width: 24px; height: 24px; cursor: pointer; color: rgba(17, 24, 39, 0.6); transition: all 0.2s ease; }
+    .password-wrapper svg:hover { color: #000; transform: scale(1.15); }
 
     .modal button {
-      padding: 14px 20px;
-      border: none;
-      border-radius: 18px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #0b1228 0%, #1a2332 100%);
-      color: white;
-      cursor: pointer;
-      font-size: 15px;
+      padding: 18px 24px; border: none; border-radius: 22px; font-weight: 700;
+      background: linear-gradient(135deg, #222 0%, #444 100%);
+      color: white; cursor: pointer; font-size: 16px;
+      letter-spacing: 0.5px;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 
-        0 12px 40px rgba(6, 11, 23, 0.4),
-        0 4px 12px rgba(6, 11, 23, 0.2);
-      position: relative;
-      overflow: hidden;
-    }
-    .modal button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transition: left 0.5s ease;
-    }
-    .modal button:hover::before {
-      left: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 10px 25px rgba(0, 0, 0, 0.25);
+      position: relative; overflow: hidden;
     }
     .modal button:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 
-        0 16px 50px rgba(6, 11, 23, 0.5),
-        0 6px 16px rgba(6, 11, 23, 0.3);
+      transform: translateY(-6px) scale(1.05);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.5), 0 15px 35px rgba(0, 0, 0, 0.3);
     }
 
     .signup-link {
-      text-align: center;
-      color: rgba(94, 158, 255, 0.9);
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 14px;
-      margin-top: 4px;
-      transition: all 0.2s ease;
-      text-shadow: 0 2px 8px rgba(94, 158, 255, 0.2);
+      text-align: center; font-weight: 600; cursor: pointer; font-size: 15px; margin-top: 12px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 22px; padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      color: rgba(17, 24, 39, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     .signup-link:hover {
-      color: #5e9eff;
-      text-shadow: 0 2px 12px rgba(94, 158, 255, 0.4);
-      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.2); color: #000;
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.18);
     }
 
-    /* ULTRA PREMIUM NAVIGATION (iPhone 17 Pro Glass) */
-    .nav { 
-      position: fixed; 
-      top: 12px; 
-      left: 50%; 
-      transform: translateX(-50%); 
-      z-index: 90; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
-      backdrop-filter: blur(40px) saturate(200%) brightness(1.05);
-      -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.05);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      box-shadow: 
-        0 12px 40px rgba(0, 0, 0, 0.12),
-        0 4px 12px rgba(0, 0, 0, 0.06),
-        inset 0 1px 1px rgba(255, 255, 255, 0.4),
-        inset 0 -1px 1px rgba(0, 0, 0, 0.03);
-      border-radius: 28px;
-      padding: 7px 22px;
-      max-width: 680px;
-      width: 90%;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .nav::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-      border-radius: 28px 28px 0 0;
+    /* Navigation Bar */
+    .nav {
+      /* Inherits from .glass-ui */
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 90;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 99px;
+      padding: 10px 28px;
+      max-width: 760px;
+      width: 94%;
+      background: linear-gradient(165deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
     .nav:hover {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.12));
-      box-shadow: 
-        0 16px 50px rgba(0, 0, 0, 0.16),
-        0 6px 16px rgba(0, 0, 0, 0.08),
-        inset 0 1px 1px rgba(255, 255, 255, 0.5),
-        inset 0 -1px 1px rgba(0, 0, 0, 0.02);
-      transform: translateX(-50%) translateY(-1px);
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow:
+        0 35px 90px -20px rgba(0, 0, 0, 0.3),
+        0 18px 45px -15px rgba(0, 0, 0, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.7),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.15);
     }
-    .logo { display:flex; align-items:center; font-weight:700; font-size:1.4rem; color:#041227; gap:8px; cursor:pointer; }
-    .dot-w { width:24px; height:24px; position:relative; display:inline-block; }
-    .dot-w span { position:absolute; width:4px; height:4px; border-radius:50%; background:rgba(0,0,0,0.7); opacity:0; animation:dotWAnim 2s infinite; }
-    .dot-w span:nth-child(1){top:0; left:0; animation-delay:0s;}
-    .dot-w span:nth-child(2){top:0; left:50%; animation-delay:0.1s;}
-    .dot-w span:nth-child(3){top:0; left:100%; animation-delay:0.2s;}
-    .dot-w span:nth-child(4){top:50%; left:25%; animation-delay:0.3s;}
-    .dot-w span:nth-child(5){top:50%; left:75%; animation-delay:0.4s;}
-    .dot-w span:nth-child(6){top:100%; left:0; animation-delay:0.5s;}
-    .dot-w span:nth-child(7){top:100%; left:50%; animation-delay:0.6s;}
-    .dot-w span:nth-child(8){top:100%; left:100%; animation-delay:0.7s;}
+    .logo { display:flex; align-items:center; font-weight:600; font-size:1.5rem; color:#111827; gap:10px; cursor:pointer; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+    .dot-w { width:26px; height:26px; position:relative; display:inline-block; }
+    .dot-w span { position:absolute; width:5px; height:5px; border-radius:50%; background:rgba(0,0,0,0.7); opacity:0; animation:dotWAnim 2s infinite; }
+    .dot-w span:nth-child(1){top:0; left:0; animation-delay:0s;} .dot-w span:nth-child(2){top:0; left:50%; animation-delay:0.1s;} .dot-w span:nth-child(3){top:0; left:100%; animation-delay:0.2s;} .dot-w span:nth-child(4){top:50%; left:25%; animation-delay:0.3s;} .dot-w span:nth-child(5){top:50%; left:75%; animation-delay:0.4s;} .dot-w span:nth-child(6){top:100%; left:0; animation-delay:0.5s;} .dot-w span:nth-child(7){top:100%; left:50%; animation-delay:0.6s;} .dot-w span:nth-child(8){top:100%; left:100%; animation-delay:0.7s;}
     @keyframes dotWAnim { 0%,20%,100%{opacity:0; transform:scale(0);} 50%{opacity:1; transform:scale(1);} }
-    .nav button { font-weight:600; padding:4px 10px; border-radius:12px; border:none; cursor:pointer; backdrop-filter: blur(12px); background: rgba(255,255,255,0.25); transition: all 0.2s ease; }
-    .nav button:hover { background: rgba(255,255,255,0.35); }
-    .nav .nav-link { margin-left:12px; font-weight:500; cursor:pointer; }
+    .nav button { font-weight:600; padding:8px 14px; border-radius:16px; border:1px solid rgba(255,255,255,0.15); color:#111827; cursor:pointer; backdrop-filter: blur(20px); background: rgba(255,255,255,0.15); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .nav button:hover { background: rgba(255,255,255,0.3); transform: scale(1.08); }
+    .nav .nav-link { margin-left:12px; font-weight:700; cursor:pointer; color:#111827; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
 
-    /* HERO */
-    .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; position:relative; padding:120px 20px 80px; }
+    /* Hero Section */
+    .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; position:relative; padding:140px 20px 80px; }
+    .headline { font-weight:800; font-size:clamp(42px,6.5vw,84px); position:relative; margin-bottom:16px; color:#111827; cursor:pointer; text-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); }
+    .headline span.blue { color:#5e9eff; }
 
-    .headline { font-weight:800; font-size:clamp(40px,6vw,80px); position:relative; margin-bottom:16px; color:#041227; cursor:pointer; }
-    .headline::after { content:""; position:absolute; left:0; top:0; width:100%; height:100%; background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.12), rgba(255,255,255,0.02)); mix-blend-mode: overlay; pointer-events:none; opacity:0.9; background-size: 200% 100%; transform: translateX(-100%); transition: transform 0.5s linear; }
-    .headline:hover::after { transform: translateX(100%); }
-    .headline span.blue { color:#5e9eff; } 
-
-    .marquee-container { width: 100%; overflow: hidden; margin-top: 10px; position: relative; -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 12%, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 12%, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%); }
-    .marquee-text { display: inline-block; white-space: nowrap; font-size: clamp(20px,3vw,28px); font-weight: 600; color: #041227; opacity: 0.95; padding: 6px 0; text-shadow: 0 2px 8px rgba(10,75,255,0.06), 0 0 18px rgba(10,75,255,0.03); animation: marqueeSlide 16s linear infinite; will-change: transform; transform: translate3d(0,0,0); }
-    @keyframes marqueeSlide { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-    /* ULTRA-PREMIUM JOB SEARCH BAR (iPhone 17 Pro Glass + Parallax) */
-    .search-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 20px;
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
-      backdrop-filter: blur(44px) saturate(220%) brightness(1.08);
-      -webkit-backdrop-filter: blur(44px) saturate(220%) brightness(1.08);
-      border: 1px solid rgba(255, 255, 255, 0.32);
-      border-radius: 32px;
-      padding: 4px 12px;
-      box-shadow: 
-        0 14px 40px rgba(0, 0, 0, 0.12),
-        0 4px 12px rgba(0, 0, 0, 0.06),
-        inset 0 1px 1px rgba(255, 255, 255, 0.4),
-        inset 0 -1px 1px rgba(0, 0, 0, 0.03);
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      width: fit-content;
-      min-width: 220px;
-      max-width: 320px;
-      height: 44px;
-      position: relative;
-      will-change: transform;
+    /* 'M' Animation */
+    .falling-m {
+      display: inline-block;
+      animation: fallIn 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
+      opacity: 0;
     }
-    .search-bar::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-      border-radius: 32px 32px 0 0;
+    @keyframes fallIn { from { opacity: 0; transform: translateY(-150px) rotate(-25deg) scale(1.3); } to { opacity: 1; transform: translateY(0) rotate(0) scale(1); } }
+
+    .marquee-container { width: 100%; overflow: hidden; margin-top: 10px; position: relative; -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent); mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent); }
+    .marquee-text { display: inline-block; white-space: nowrap; font-size: clamp(20px, 2.5vw, 26px); font-weight: 500; color: rgba(17, 24, 39, 0.8); opacity: 0.8; padding: 8px 0; text-shadow: 0 1px 3px rgba(0,0,0,0.03); animation: marqueeSlide 18s linear infinite; will-change: transform; }
+    @keyframes marqueeSlide { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+
+    /* Job Search Bar */
+    .search-bar {
+      /* Inherits from .glass-ui */
+      display: flex; align-items: center; gap: 8px; margin-top: 32px;
+      border-radius: 99px; padding: 4px 4px 4px 18px; width: fit-content;
+      min-width: 280px; max-width: 420px; height: 52px;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.08),
+                0 8px 25px rgba(0, 0, 0, 0.08);
     }
     .search-bar:hover {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.20), rgba(255, 255, 255, 0.10));
-      box-shadow: 
-        0 18px 50px rgba(0, 0, 0, 0.16),
-        0 6px 16px rgba(0, 0, 0, 0.08),
-        inset 0 1px 1px rgba(255, 255, 255, 0.5),
-        inset 0 -1px 1px rgba(0, 0, 0, 0.02);
+       transform: translateY(-3px) scale(1.01);
+       box-shadow:
+        inset 0 2px 10px rgba(0, 0, 0, 0.1),
+        0 30px 70px -15px rgba(0, 0, 0, 0.25),
+        0 15px 40px -10px rgba(0, 0, 0, 0.2);
     }
+    .search-bar .search-icon { color: #111827; opacity: 0.7; display: flex; align-items: center; height: 100%; }
+    .search-bar .search-icon svg { width: 20px; height: 20px; stroke-width: 2.5; }
     .search-bar input {
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: 13px;
-      width: 100%;
-      color: #041227;
-      padding: 0;
-      height: 100%;
-      line-height: 44px;
-      font-weight: 500;
+      border: none; outline: none; background: transparent; font-size: 16px; width: 100%;
+      color: #111827; padding: 0 8px; height: 100%; line-height: 56px; font-weight: 500;
     }
+    .search-bar input::placeholder { color: rgba(17, 24, 39, 0.5); }
+
     .cta-button {
-      margin-left: 6px;
-      padding: 6px 12px;
-      border-radius: 22px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #0b1228 0%, #1a2332 100%);
-      color: white;
-      box-shadow: 
-        0 10px 40px rgba(6, 11, 23, 0.3),
-        0 4px 12px rgba(6, 11, 23, 0.15);
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      border: none;
-      position: relative;
-      overflow: hidden;
-    }
-    .cta-button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-      transition: left 0.5s ease;
-    }
-    .cta-button:hover::before {
-      left: 100%;
+      margin-left: 8px; padding: 10px 18px; border-radius: 99px; font-weight: 700;
+      background: linear-gradient(135deg, #222 0%, #444 100%);
+      color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 4px 10px rgba(0,0,0,0.15);
+      cursor: pointer; font-size: 15px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(255, 255, 255, 0.1); position: relative; overflow: hidden;
     }
     .cta-button:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 
-        0 14px 50px rgba(6, 11, 23, 0.4),
-        0 6px 16px rgba(6, 11, 23, 0.2);
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.2);
     }
 
     @media (max-width: 768px) {
-      .search-bar { min-width:180px; max-width:260px; padding:3px 8px; height:40px; }
-      .search-bar input { font-size:13px; }
-      .cta-button { padding:4px 8px; font-size:13px; }
+      .nav { padding: 8px 20px; border-radius: 32px; }
+      .search-bar { min-width:200px; max-width:300px; height:44px; padding: 4px 4px 4px 12px; }
+      .search-bar input { font-size:14px; }
+      .cta-button { padding:6px 12px; font-size:14px; }
     }
 
     .feature-section { padding:60px 20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; max-width:1100px; margin:0 auto; }
     .feature-card { background:rgba(255,255,255,0.85); padding:20px; border-radius:16px; box-shadow:0 12px 36px rgba(0,0,0,0.06); text-align:center; }
 
-    .footer { padding:24px 16px; text-align:center; color:#041227; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-top:1px solid rgba(0,0,0,0.03); font-size:14px; line-height:1.6; }
-    .footer-above { margin-bottom:12px; font-weight:500; opacity:0.85; text-align:center; }
+    .footer { padding:20px 16px; text-align:center; color:rgba(17, 24, 39, 0.7); background:transparent; border-top:1px solid rgba(0,0,0,0.05); font-size:13px; line-height:1.6; }
+    .footer-above { margin-bottom:16px; font-weight:500; opacity:0.8; text-align:center; color:rgba(17, 24, 39, 0.8); text-shadow: 0 1px 2px rgba(0,0,0,0.02); }
 
-    /* ICE OVERLAY */
+    /* ICE OVERLAY V2 - UHD MELTING EFFECT */
     .ice-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: linear-gradient(180deg, rgba(220,235,245,0.6), rgba(240,250,255,0.55));
-      backdrop-filter: blur(20px) saturate(160%);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      overflow:hidden;
-      pointer-events:auto;
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(180deg, rgba(200,225,245,0.6), rgba(230,245,255,0.55));
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      display:flex; align-items:center; justify-content:center; flex-direction:column;
+      overflow:hidden; pointer-events:auto;
+      /* Mask for melting effect */
+      mask-image: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 50%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 50%);
+      transition: mask-image 0.5s ease-out; /* smooth transition for mask */
     }
-
-    .ice-overlay .frost {
-      position:absolute;
-      inset:0;
-      background-image:
-        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.85) 0 2px, rgba(255,255,255,0.03) 3px),
-        radial-gradient(circle at 80% 40%, rgba(255,255,255,0.65) 0 1px, rgba(255,255,255,0.01) 3px),
-        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-      mix-blend-mode: screen;
-      filter: contrast(1.05) saturate(1.05);
-      opacity:0.95;
-      transform: scale(1.03);
-      pointer-events:none;
-    }
-
-    .ice-overlay .droplets {
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      background-image:
-        radial-gradient(circle at 20% 0%, rgba(255,255,255,0.45) 0 2px, transparent 3px),
-        radial-gradient(circle at 60% -5%, rgba(255,255,255,0.35) 0 2px, transparent 3px);
-      background-repeat: repeat;
-      animation: drip 7s linear infinite;
-      opacity:0.9;
-      mix-blend-mode: overlay;
-    }
-    @keyframes drip {
-      0% { background-position: 0 -10vh, 20% -5vh; opacity:1; }
-      100% { background-position: 0 120vh, 20% 130vh; opacity:0.05; }
-    }
-
-    .ice-card {
-      position:relative;
-      z-index:2;
-      background: rgba(255,255,255,0.08);
-      border-radius: 18px;
-      padding: 28px 34px;
-      box-shadow: 0 20px 60px rgba(8,18,35,0.35);
-      text-align:center;
-      min-width: 320px;
-      max-width: 92%;
-      backdrop-filter: blur(8px);
-    }
-
-    .ice-card h2 {
-      margin:0 0 14px 0;
-      font-size:22px;
-      font-weight:800;
-      color:#041227;
-    }
-
-    .ice-actions { display:flex; gap:14px; justify-content:center; margin-top:6px; }
-    .ice-btn {
-      padding:10px 18px;
-      border-radius:20px;
-      border:none;
-      cursor:pointer;
-      font-weight:700;
-      background:#05102a;
-      color:#fff;
-      box-shadow: 0 8px 30px rgba(6,11,23,0.35);
-    }
-    .ice-btn.secondary {
-      background: rgba(255,255,255,0.12);
-      color:#041227;
-      box-shadow: 0 6px 20px rgba(4,9,18,0.06);
-    }
-
     .ice-overlay.melting {
-      animation: overlayMelt 9s ease forwards;
+      animation: overlayMeltV2 7s cubic-bezier(0.65, 0, 0.35, 1) forwards; /* Smoother, more organic easing */
       pointer-events: none;
+      /* Animate the mask to reveal content below */
+      mask-image: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%);
     }
-    @keyframes overlayMelt {
+
+    /* Keyframes for complex overlay melt */
+    @keyframes overlayMeltV2 {
       0% {
         opacity:1;
         transform: translateY(0) scale(1);
-        backdrop-filter: blur(20px) saturate(160%);
+        backdrop-filter: blur(18px) saturate(150%);
+        -webkit-backdrop-filter: blur(18px) saturate(150%);
+        mask-position: 0 0; /* Mask starts at original position */
       }
-      40% {
-        opacity:0.85;
-        transform: translateY(3vh) scale(0.99);
-        backdrop-filter: blur(14px) saturate(140%);
+      20% {
+        backdrop-filter: blur(16px) saturate(140%);
+        -webkit-backdrop-filter: blur(16px) saturate(140%);
       }
-      80% {
-        opacity:0.25;
-        transform: translateY(20vh) scale(0.98);
-        backdrop-filter: blur(6px) saturate(120%);
+      60% {
+        opacity:0.6;
+        transform: translateY(10vh) scale(0.99);
+        backdrop-filter: blur(6px) saturate(110%);
+        -webkit-backdrop-filter: blur(6px) saturate(110%);
       }
       100% {
         opacity:0;
-        transform: translateY(40vh) scale(0.96);
+        transform: translateY(30vh) scale(0.97);
         backdrop-filter: blur(0px) saturate(100%);
+        -webkit-backdrop-filter: blur(0px) saturate(100%);
+        mask-position: 0 100%; /* Mask moves down to fully reveal */
       }
     }
 
-    .ice-blocked {
-      color:#041227;
-      font-weight:700;
-      font-size:18px;
+    .ice-overlay .frost {
+      position:absolute; inset:0;
+      background-image:
+        radial-gradient(circle at 15% 25%, rgba(255,255,255,0.9) 0 3px, rgba(255,255,255,0.05) 5px),
+        radial-gradient(circle at 85% 35%, rgba(255,255,255,0.7) 0 2px, rgba(255,255,255,0.02) 4px),
+        radial-gradient(circle at 40% 70%, rgba(255,255,255,0.6) 0 1px, rgba(255,255,255,0.01) 3px),
+        linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      mix-blend-mode: screen; filter: contrast(1.1) saturate(1.1); /* Enhanced contrast and saturation */
+      opacity:0.98; transform: scale(1.02); pointer-events:none; /* Slight scale for depth */
+      animation: frostShimmer 12s infinite ease-in-out;
     }
+    @keyframes frostShimmer {
+      0%, 100% { transform: scale(1.02) rotate(0deg); opacity: 0.98; }
+      50% { transform: scale(1.03) rotate(0.5deg); opacity: 1; }
+    }
+
+
+    /* Enhanced Droplets */
+    .ice-overlay .droplets {
+      position:absolute; inset:0; pointer-events:none;
+      /* Multiple layers of droplets for depth and variation */
+      background-image:
+        /* Large droplets */
+        radial-gradient(circle at 20% 0%, rgba(255,255,255,0.6) 0 4px, transparent 6px),
+        radial-gradient(circle at 60% -5%, rgba(255,255,255,0.5) 0 3px, transparent 5px),
+        radial-gradient(circle at 80% 10%, rgba(255,255,255,0.7) 0 5px, transparent 8px),
+        /* Medium droplets */
+        radial-gradient(circle at 10% 30%, rgba(255,255,255,0.4) 0 2px, transparent 4px),
+        radial-gradient(circle at 70% 20%, rgba(255,255,255,0.3) 0 1px, transparent 3px),
+        /* Small droplets */
+        radial-gradient(circle at 30% -10%, rgba(255,255,255,0.2) 0 1px, transparent 2px),
+        radial-gradient(circle at 90% 50%, rgba(255,255,255,0.1) 0 1px, transparent 2px);
+
+      background-size: 200px 200px, 180px 180px, 250px 250px, 150px 150px, 170px 170px, 100px 100px, 120px 120px;
+      background-repeat: repeat;
+      animation: dripV2 12s linear infinite; /* Longer, smoother animation */
+      opacity:0.9; mix-blend-mode: overlay;
+      filter: drop-shadow(0 0 1px rgba(0,0,0,0.2)) blur(0.5px); /* Subtle shadow and blur for depth */
+    }
+    @keyframes dripV2 {
+      0% {
+        background-position:
+          0 -20vh, 20% -15vh, 40% -25vh,
+          10% -5vh, 70% -10vh,
+          30% -0vh, 90% -30vh;
+        opacity:1;
+        transform: scale(1);
+      }
+      100% {
+        background-position:
+          0 140vh, 20% 135vh, 40% 145vh,
+          10% 115vh, 70% 120vh,
+          30% 110vh, 90% 130vh;
+        opacity:0.2; /* Fade out more */
+        transform: scale(1.05); /* Slight scale change */
+      }
+    }
+    .ice-card {
+      position:relative; z-index:2; background: rgba(255,255,255,0.1);
+      border-radius: 22px;
+      padding: 28px 32px; box-shadow: 0 20px 60px rgba(8,18,35,0.3);
+      text-align:center; min-width: 320px; max-width: 92%; backdrop-filter: blur(8px);
+    }
+    .ice-card h2 { margin:0 0 16px 0; font-size:22px; font-weight:700; color:#111827; }
+    .ice-actions { display:flex; gap:14px; justify-content:center; margin-top:8px; }
+    .ice-btn {
+      padding:10px 20px; border-radius:20px; border:none; cursor:pointer;
+      font-weight:700; background:#1A1A1A; color:#fff;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+    .ice-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+    .ice-btn.secondary {
+      background: rgba(255,255,255,0.1); color:#111827;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    }
+    .ice-btn.secondary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+    .ice-blocked { color:#111827; font-weight:700; font-size:18px; }
   </style>
 </head>
-
 <body>
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    function useSmoothScroll() {
-      const [scroll, setScroll] = useState(0);
-      useEffect(()=>{
-        const onScroll=()=>setScroll(window.scrollY);
-        window.addEventListener('scroll',onScroll,{passive:true});
-        return ()=>window.removeEventListener('scroll',onScroll);
-      },[]);
-      return scroll;
+    // Configure AWS Cognito
+    const cognitoConfig = {
+      UserPoolId: "us-east-1_L0PXwvHt9",
+      ClientId: "5ogmr4s7bbujovq8k5uds3nv8j",
+    };
+
+    // -------------------------------------------------------------------------
+    // --> CONFIGURE YOUR COGNITO HOSTED UI DETAILS HERE <--
+    // -------------------------------------------------------------------------
+    const cognitoHostedUI = {
+        Domain: "us-east-1l0pxwvht9", // e.g., "wazifhub-prod". Find this in your User Pool -> App Integration -> Domain.
+        RedirectUri: "http://localhost:8000/index.html" // The URL of your app where users will be sent after login.
     }
+    // -------------------------------------------------------------------------
 
     function App() {
       const [isArabic,setIsArabic]=useState(false);
-      const [showLogin,setShowLogin] = useState(false);
-      const [showPassword, setShowPassword] = useState(false);
-      const [iceMelt, setIceMelt] = useState(false);
+
       const [iceVisible, setIceVisible] = useState(true);
+      const [iceMelt, setIceMelt] = useState(false);
       const [iceBlocked, setIceBlocked] = useState(false);
-      const scroll = useSmoothScroll();
       const ctaRef = useRef(null);
+
+      useEffect(() => {
+        const hasConfirmed = localStorage.getItem('hasConfirmedSaudiNational') === 'true';
+        const blockedUntil = localStorage.getItem('blockedUntil');
+    
+        if (hasConfirmed) {
+            setIceVisible(false);
+            return;
+        }
+    
+        if (blockedUntil) {
+            if (Date.now() < parseInt(blockedUntil, 10)) {
+                setIceVisible(true);
+                setIceBlocked(true); // Stay on the blocked screen
+            } else {
+                // Timer expired, remove the block
+                localStorage.removeItem('blockedUntil');
+                setIceVisible(true);
+                setIceBlocked(false);
+            }
+        }
+      }, []);
+
+      const redirectToCognito = () => {
+        const region = cognitoConfig.UserPoolId.split('_')[0];
+        const { Domain, RedirectUri } = cognitoHostedUI;
+        const { ClientId } = cognitoConfig;
+
+        if (Domain === "YOUR_COGNITO_DOMAIN") {
+            alert("Developer: Please update the 'Domain' in the 'cognitoHostedUI' configuration object in the script.");
+            return;
+        }
+
+        const encodedRedirectUri = encodeURIComponent(RedirectUri);
+        const url = `https://${Domain}.auth.${region}.amazoncognito.com/login?response_type=token&client_id=${ClientId}&redirect_uri=${encodedRedirectUri}`;
+        window.location.href = url;
+      };
 
       const content = {
         en:{ heroParts: ["Find Your Drea", "m", " Job Here"], marquee:"For Saudi nationals ~ Creating opportunities, building futures, driving Vision 2030.",
@@ -503,7 +446,7 @@
             {title:"المطابقة الذكية",desc:"احصل على توصيات وظائف مدعومة بالذكاء الاصطناعي وفق مهاراتك وأهدافك."},
             {title:"تنبيهات فورية",desc:"احصل على إشعارات فورية حول وظائف مطابقة ونصائح مهنية."},
             {title:"كشف الاحتيال بالذكاء الاصطناعي",desc:"ابق آمناً: نظامنا المتقدم يحدد الوظائف والشركات الوهمية — موثوق للسعوديين."},
-            {title:"استخلاص ذكي للوظائف من المنصات",desc:"يقوم محرك الذكاء الاصطناعي لدينا بمسح وتجميع الوظائف من منصات التوظيف السعودية الموثوقة لضمان عرض الفرص المناسبة فقط للسعوديين في منصة موحدة."},
+            {title:"استخلاص ذكي للوظائف من المنصات",desc:"يقوم محرك الذكاء الاص0ناعي لدينا بمسح وتجميع الوظائف من منصات التوظيف السعودية الموثوقة لضمان عرض الفرص المناسبة فقط للسعوديين في منصة موحدة."},
             {title:"التحقق الموثوق من نظام نطاقات",desc:"يتم التحقق من كل وظيفة وكل شركة عبر نظام نطاقات الرسمي لضمان التزامها بأنظمة السعودية قبل وصولها للمستخدم."}
           ],
           cta:"ابدأ", footer:"© 2025 وظيف هب. تجربة بوابة وظائف متميزة.", footerAbove:"تمكين المواهب السعودية بفرص حقيقية — دعم فخور لرؤية 2030"
@@ -519,7 +462,7 @@
           const r = el.getBoundingClientRect();
           const cx=r.left+r.width/2;
           const cy=r.top+r.height/2;
-          const dx=e.clientX-cx;
+          const dx=e.clientX-cy;
           const dy=e.clientY-cy;
           const dist=Math.sqrt(dx*dx+dy*dy);
           const max=120;
@@ -534,14 +477,20 @@
 
       const startMelt = () => {
         if(!iceVisible || iceBlocked) return;
+
+        // Set the flag in localStorage so the overlay is not shown on subsequent visits
+        localStorage.setItem('hasConfirmedSaudiNational', 'true');
+        localStorage.removeItem('blockedUntil');
+
         setIceMelt(true);
         setTimeout(()=>{
           setIceVisible(false);
           setIceMelt(false);
-        }, 9200);
+        }, 7200); // Keep timeout to match animation duration
       };
 
       const handleIceNo = () => {
+        localStorage.setItem('blockedUntil', Date.now() + 10 * 60 * 1000);
         setIceBlocked(true);
       };
 
@@ -554,34 +503,15 @@
             </div>
             <div>
               <button onClick={()=>setIsArabic(a=>!a)} aria-pressed={isArabic}>{isArabic ? 'English' : 'عربي'}</button>
-              <span className="nav-link" style={{fontWeight:700}} onClick={()=>setShowLogin(true)}>{t.login}</span>
+              <span className="nav-link" style={{fontWeight:700}} onClick={redirectToCognito}>{t.login}</span>
             </div>
           </nav>
-
-          {showLogin && 
-            <div className="modal-backdrop" onClick={()=>setShowLogin(false)} role="dialog" aria-modal="true">
-              <div className="modal" onClick={e=>e.stopPropagation()}>
-                <input placeholder={isArabic ? "المعرف / البريد الإلكتروني" : "ID / Email"} type="text" aria-label="ID or email"/>
-                <div className="password-wrapper">
-                  <input placeholder={isArabic ? "كلمة المرور" : "Password"} type={showPassword ? "text":"password"} aria-label="Password"/>
-                  <svg onClick={()=>setShowPassword(s=>!s)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" role="img" aria-label={showPassword ? "Hide password" : "Show password"}>
-                    {showPassword ? 
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.96 9.96 0 012.634-6.788M15 12a3 3 0 11-6 0 3 3 0 016 0z" /> :
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7zM12 12a3 3 0 100-6 3 3 0 000 6z" />
-                    }
-                  </svg>
-                </div>
-                <button onClick={()=>{ alert(isArabic ? 'تم النقر تسجيل الدخول' : 'Login Clicked'); setShowLogin(false); }}>Login</button>
-                <div className="signup-link" onClick={()=>alert(isArabic ? 'تم النقر تسجيل' : 'Sign Up Clicked')}>{isArabic ? 'التسجيل' : 'Sign Up'}</div>
-              </div>
-            </div>
-          }
 
           <section className="hero" aria-labelledby="hero-heading">
             <h1 id="hero-heading" className="headline">
               {!isArabic ? (
                 <>
-                  {t.heroParts[0]}<span className="blue">{t.heroParts[1]}</span>{t.heroParts[2].split(' Job Here')[0]}
+                  {t.heroParts[0]}<span className="blue falling-m">{t.heroParts[1]}</span>{t.heroParts[2].split(' Job Here')[0]}
                   <span className="blue"> Job Here</span>
                 </>
               ) : t.hero}
@@ -591,10 +521,14 @@
               <div className="marquee-text">{t.marquee}</div>
             </div>
 
-            <div className="search-bar" style={{transform:`translateY(${scroll*0.5}px)`}}>
-              <span aria-hidden>🔍</span>
+            <div className="search-bar">
+              <div className="search-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-3.5-3.5M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z" />
+                </svg>
+              </div>
               <input placeholder={t.search}/>
-              <button ref={ctaRef} className="cta-button" onClick={()=>setShowLogin(true)}>{t.cta}</button>
+              <button ref={ctaRef} className="cta-button" onClick={redirectToCognito}>{t.cta}</button>
             </div>
 
             {iceVisible && (
@@ -629,13 +563,13 @@
 
           <div className="footer-above">{t.footerAbove}</div>
           <footer className="footer">
-            Designed & Developed ~ <a href="https://www.linkedin.com/in/khan-mohammed-790b18214" target="_blank" rel="noopener noreferrer">www.linkedin.com/in/khan-mohammed-790b18214</a><br/>
-            © 2025 Khan Mohammed | Vision 2030
+            Designed & Developed by <a href="https://www.linkedin.com/in/khan-mohammed-790b18214" target="_blank" rel="noopener noreferrer" style={{fontWeight: '600', color: '#111827'}}>Khan Mohammed</a>
+            <br/>
+            © 2025 WazifHub | Proudly Supporting Vision 2030
           </footer>
         </div>
       );
     }
-
     ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
   </script>
 </body>
