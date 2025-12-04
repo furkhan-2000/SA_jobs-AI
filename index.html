@@ -8,7 +8,7 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/aws-amplify/dist/aws-amplify.min.js"></script>
+  <script src="https://unpkg.com/amazon-cognito-identity-js/dist/amazon-cognito-identity.min.js"></script>
 
   <style>
     body, html, #root { height: 100%; margin: 0; font-family: Inter, sans-serif; background: #e8edf5; }
@@ -367,24 +367,24 @@
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
-    const { Auth, Amplify } = aws_amplify;
 
-    Amplify.configure({
-      Auth: {
-        region: "us-east-1",
-        userPoolId: "us-east-1_y12o1s5ao",
-        userPoolWebClientId: "2jcm35pd0k4sc9tsjgqh8kesgb",
-      }
-    });
+    // Configure AWS Cognito
+    const cognitoConfig = {
+      UserPoolId: "us-east-1_L0PXwvHt9",
+      ClientId: "5ogmr4s7bbujovq8k5uds3nv8j",
+    };
+
+    // -------------------------------------------------------------------------
+    // --> CONFIGURE YOUR COGNITO HOSTED UI DETAILS HERE <--
+    // -------------------------------------------------------------------------
+    const cognitoHostedUI = {
+        Domain: "us-east-1l0pxwvht9", // e.g., "wazifhub-prod". Find this in your User Pool -> App Integration -> Domain.
+        RedirectUri: "http://localhost:8000/index.html" // The URL of your app where users will be sent after login.
+    }
+    // -------------------------------------------------------------------------
 
     function App() {
       const [isArabic,setIsArabic]=useState(false);
-      const [showLogin,setShowLogin] = useState(false);
-      const [showPassword, setShowPassword] = useState(false);
-      const [username, setUsername] = useState("");
-      const [password, setPassword] = useState("");
-      const [error, setError] = useState(null);
-      const [isLoading, setIsLoading] = useState(false);
 
       const [iceVisible, setIceVisible] = useState(true);
       const [iceMelt, setIceMelt] = useState(false);
@@ -413,20 +413,19 @@
         }
       }, []);
 
-      const handleLogin = async () => {
-        setError(null);
-        setIsLoading(true);
-        try {
-          const user = await Auth.signIn(username, password);
-          console.log('Authentication successful:', user);
-          alert('Login Successful!');
-          setShowLogin(false);
-        } catch (err) {
-          console.error('Error signing in:', err);
-          setError(err.message || JSON.stringify(err));
-        } finally {
-          setIsLoading(false);
+      const redirectToCognito = () => {
+        const region = cognitoConfig.UserPoolId.split('_')[0];
+        const { Domain, RedirectUri } = cognitoHostedUI;
+        const { ClientId } = cognitoConfig;
+
+        if (Domain === "YOUR_COGNITO_DOMAIN") {
+            alert("Developer: Please update the 'Domain' in the 'cognitoHostedUI' configuration object in the script.");
+            return;
         }
+
+        const encodedRedirectUri = encodeURIComponent(RedirectUri);
+        const url = `https://${Domain}.auth.${region}.amazoncognito.com/login?response_type=token&client_id=${ClientId}&redirect_uri=${encodedRedirectUri}`;
+        window.location.href = url;
       };
 
       const content = {
@@ -504,31 +503,9 @@
             </div>
             <div>
               <button onClick={()=>setIsArabic(a=>!a)} aria-pressed={isArabic}>{isArabic ? 'English' : 'عربي'}</button>
-              <span className="nav-link" style={{fontWeight:700}} onClick={()=>setShowLogin(true)}>{t.login}</span>
+              <span className="nav-link" style={{fontWeight:700}} onClick={redirectToCognito}>{t.login}</span>
             </div>
           </nav>
-
-          {showLogin && 
-            <div className="modal-backdrop" onClick={()=>setShowLogin(false)} role="dialog" aria-modal="true">
-              <div className="modal" onClick={e=>e.stopPropagation()}>
-                <input placeholder={isArabic ? "المعرف / البريد الإلكتروني" : "ID / Email"} type="text" aria-label="ID or email" value={username} onChange={e => setUsername(e.target.value)}/>
-                <div className="password-wrapper">
-                  <input placeholder={isArabic ? "كلمة المرور" : "Password"} type={showPassword ? "text":"password"} aria-label="Password" value={password} onChange={e => setPassword(e.target.value)}/>
-                  <svg onClick={()=>setShowPassword(s=>!s)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" role="img" aria-label={showPassword ? "Hide password" : "Show password"}>
-                    {showPassword ? 
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.96 9.96 0 012.634-6.788M15 12a3 3 0 11-6 0 3 3 0 016 0z" /> : 
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7zM12 12a3 3 0 100-6 3 3 0 000 6z" />
-                    }
-                  </svg>
-                </div>
-                {error && <p style={{ color: '#b91c1c', textAlign: 'center', fontWeight: '600', paddingBottom: '10px' }}>{error}</p>}
-                <button onClick={handleLogin} disabled={isLoading}>
-                  {isLoading ? (isArabic ? 'جارٍ تسجيل الدخول...' : 'Logging in...') : t.login}
-                </button>
-                <div className="signup-link" onClick={()=>alert(isArabic ? 'تم النقر تسجيل' : 'Sign Up Clicked')}>{isArabic ? 'التسجيل' : 'Sign Up'}</div>
-              </div>
-            </div>
-          }
 
           <section className="hero" aria-labelledby="hero-heading">
             <h1 id="hero-heading" className="headline">
@@ -551,7 +528,7 @@
                 </svg>
               </div>
               <input placeholder={t.search}/>
-              <button ref={ctaRef} className="cta-button" onClick={()=>setShowLogin(true)}>{t.cta}</button>
+              <button ref={ctaRef} className="cta-button" onClick={redirectToCognito}>{t.cta}</button>
             </div>
 
             {iceVisible && (
