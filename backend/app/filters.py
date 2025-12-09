@@ -12,7 +12,7 @@ def filter_ksa_remote(raw_job: dict) -> bool:
         if "remote" in loc:
             return True
     except Exception as e:
-        logger.exception("filter_ksa_remote failed: {}", str(e))
+        logger.exception(f"filter_ksa_remote failed: {e}")
     return False
 
 def apply_search_filter(jobs: List[dict], keyword: str | None = None,

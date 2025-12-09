@@ -7,7 +7,8 @@ import asyncio
 
 def _fingerprint(job: Dict) -> str:
     txt = (job.get("title","") or "") + "|" + (job.get("company","") or "") + "|" + (job.get("url","") or "")
-    return hashlib.sha1(txt.encode("utf-8")).hexdigest()
+    # use SHA256 instead of SHA1
+    return hashlib.sha256(txt.encode("utf-8")).hexdigest()
 
 def _normalize(raw: Dict, source: str) -> Dict:
     title = raw.get("title") or raw.get("jobTitle") or raw.get("name") or ""
@@ -36,7 +37,7 @@ async def _run_client(src_name: str, fn: Callable[[], Iterable[Dict]]) -> List[D
     try:
         raw = await fn()
         if not isinstance(raw, list):
-            logger.warning("client %s returned non-list; ignoring", src_name)
+            logger.warning(f"client {src_name} returned non-list; ignoring")
             return []
         kept = []
         for item in raw:
@@ -44,11 +45,11 @@ async def _run_client(src_name: str, fn: Callable[[], Iterable[Dict]]) -> List[D
                 if filter_ksa_remote(item):
                     kept.append(_normalize(item, src_name))
             except Exception as e:
-                logger.exception("Normalization error for %s: %s", src_name, str(e))
-        logger.info("client %s -> raw=%d kept=%d", src_name, len(raw), len(kept))
+                logger.exception(f"Normalization error for {src_name}: {e}")
+        logger.info(f"client {src_name} -> raw={len(raw)} kept={len(kept)}")
         return kept
     except Exception as e:
-        logger.exception("client %s failed: %s", src_name, str(e))
+        logger.exception(f"client {src_name} failed: {e}")
         return []
 
 async def fetch_all_jobs() -> List[Dict]:
@@ -61,16 +62,16 @@ async def fetch_all_jobs() -> List[Dict]:
         ("careerjet", JobAPIClients.fetch_careerjet),
         ("openwebninja", JobAPIClients.fetch_openweb_ninja)
     ]
-    tasks = [ _run_client(name, fn) for name, fn in clients ]
+    tasks = [_run_client(name, fn) for name, fn in clients]
     results = await asyncio.gather(*tasks, return_exceptions=False)
     flattened: List[Dict] = []
     for r in results:
         flattened.extend(r)
-    # dedupe by fingerprint
+    # dedupe by SHA256 fingerprint
     unique = {}
     for job in flattened:
         key = _fingerprint(job)
         if key not in unique:
             unique[key] = job
-    logger.info("fetch_all_jobs: unique_count=%d", len(unique))
+    logger.info(f"fetch_all_jobs: unique_count={len(unique)}")
     return list(unique.values())

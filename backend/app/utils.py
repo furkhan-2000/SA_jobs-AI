@@ -30,15 +30,13 @@ async def async_get_json(url: str, params: dict | None = None, headers: dict | N
         try:
             resp = await client.get(url, params=params, headers=headers)
             resp.raise_for_status()
-            # prefer orjson for speed
             try:
                 return orjson.loads(resp.content)
             except Exception:
-                # fallback
                 return resp.json()
         except Exception as e:
             last_exc = e
-            logger.warning("async_get_json attempt {attempt} failed for {url}: {err}", attempt=attempt, url=url, err=str(e))
+            logger.warning(f"async_get_json attempt {attempt} failed for {url}: {e}")
             await asyncio.sleep(min(2 ** attempt, 8))
-    logger.error("async_get_json all attempts failed for {url}: {err}", url=url, err=str(last_exc))
+    logger.error(f"async_get_json all attempts failed for {url}: {last_exc}")
     return None
