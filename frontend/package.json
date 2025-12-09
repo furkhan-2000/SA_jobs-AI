@@ -1,0 +1,13 @@
+{
+  "name": "saudi-jobs-frontend",
+  "version": "1.0.0",
+  "description": "UI for Saudi Jobs Dashboard",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve ."
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

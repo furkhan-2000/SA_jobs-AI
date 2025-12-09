@@ -1,0 +1,62 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+}
+
+header, footer {
+    background: #0a2342;
+    color: #fff;
+    padding: 16px;
+    text-align: center;
+}
+
+.job-card {
+    background: #ffffff;
+    padding: 16px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.job-card:hover {
+    background: #f1f5f9;
+}
+
+.job-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.job-company {
+    color: #555;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+button {
+    padding: 8px 14px;
+    border: none;
+    background: #0a2342;
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+.search-filter {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+}
