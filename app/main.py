@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -68,6 +69,12 @@ async def global_exception_handler(request: Request, exc: Exception):
 # Routers
 # --------------------------------------------------------
 app.include_router(jobs_router, prefix="/jobs", tags=["Jobs"])
+
+# --------------------------------------------------------
+# Static Files Mount (Order Matters)
+# --------------------------------------------------------
+app.mount("/src", StaticFiles(directory="src"), name="src")
+app.mount("/", StaticFiles(directory="public", html=True), name="public")
 
 # --------------------------------------------------------
 # Scheduler
