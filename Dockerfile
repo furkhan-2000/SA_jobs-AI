@@ -1,7 +1,7 @@
 # ===============================
 # Stage 1: Build frontend
 # ===============================
-FROM node:20-alpine AS frontend-builder
+FROM node:24.12.0-alpine AS frontend-builder
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Install dependencies
-RUN npm install --silent
+RUN npm install --quiet 
 
 # Copy the rest of the frontend code
 COPY public ./public
