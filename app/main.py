@@ -66,6 +66,14 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 # --------------------------------------------------------
+# Health Check Endpoint
+# --------------------------------------------------------
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
+
+# --------------------------------------------------------
 # Routers
 # --------------------------------------------------------
 app.include_router(jobs_router, prefix="/jobs", tags=["Jobs"])
@@ -73,7 +81,6 @@ app.include_router(jobs_router, prefix="/jobs", tags=["Jobs"])
 # --------------------------------------------------------
 # Static Files Mount (Order Matters)
 # --------------------------------------------------------
-app.mount("/src", StaticFiles(directory="src"), name="src")
 app.mount("/", StaticFiles(directory="public", html=True), name="public")
 
 # --------------------------------------------------------

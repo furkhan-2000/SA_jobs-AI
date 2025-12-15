@@ -1,55 +1,77 @@
-# Stage 1: Build dependencies
-FROM python:3.14-slim AS ksa
+# ===============================
+# Stage 1: Build frontend
+# ===============================
+FROM node:20-alpine AS frontend-builder
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+WORKDIR /app
 
-# System dependencies for building some python packages, and clean up
+# Copy package files first to leverage Docker cache
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+RUN npm install --silent
+
+# Copy the rest of the frontend code
+COPY public ./public
+COPY src ./src
+
+# Build the frontend
+RUN npm run build
+
+# ===============================
+# Stage 2: Build backend dependencies
+# ===============================
+FROM python:3.14-slim AS backend-builder
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install build tools for Python packages, if needed
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc curl && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends gcc && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Create and activate virtual environment
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+WORKDIR /app
 
-# Copy and install requirements
+# Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Stage 2: Final application image
+# ===============================
+# Stage 3: Final production image
+# ===============================
 FROM python:3.14-slim
 
-# Create a non-root user
-RUN addgroup --system app && \ 
-    adduser --system --ingroup app app
+# Create non-root user
+RUN addgroup --system app && adduser --system --ingroup app app
 
-# Set working directory
-WORKDIR /
+WORKDIR /app
 
-# Copy virtual environment from ksa
-COPY --from=ksa /opt/venv /opt/venv
+# Copy backend packages from builder
+COPY --from=backend-builder /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
+COPY --from=backend-builder /usr/local/bin /usr/local/bin
 
-# Copy application code
-COPY app /app
-COPY public /public
-COPY src /src
+# Copy backend application code
+COPY --chown=app:app app ./app
 
-# Set ownership to non-root user
-RUN chown -R app:app /app /public /src
+# Copy built frontend from the frontend-builder stage
+COPY --from=frontend-builder /app/build ./public
 
-# Set user
+# Switch to non-root user
 USER app
 
-# Activate virtual environment by adding it to the path
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Expose port and run application
-
+# Expose port for the application
 EXPOSE 7070
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \ 
-     CMD [ "curl", "-f", "http://localhost:7070/health"] || exit 1
+# Healthcheck to ensure the application is running
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD python3 - <<EOF
+import urllib.request, sys
+try:
+    urllib.request.urlopen("http://localhost:7070/health")
+except:
+    sys.exit(1)
+EOF
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7070"]
+# Run Gunicorn with Uvicorn workers for production
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-w", "4", "app.main:app", "-b", "0.0.0.0:7070", "--log-level", "info"]
