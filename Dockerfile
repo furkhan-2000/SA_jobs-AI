@@ -44,7 +44,8 @@ FROM python:3.14-slim
 
 # Create non-root user
 RUN groupadd -g 1003 saudi && \ 
-    useradd --uid 1003 -g saudi -s /usr/sbin/nologin saudi 
+    useradd --uid 1003 -g saudi --disabled-password saudi  
+   # here we can use this also (-s /usr/sbin/nologin) its more strict,secure user cant enter inside the container only but not good for troubleshooting pods errors ..
 
 WORKDIR /app
 
