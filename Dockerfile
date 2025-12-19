@@ -20,7 +20,7 @@ RUN npm run build
 
 # ===============================
 # Stage 2: Build backend dependencies
-# ===============================
+# ==============================
 FROM python:3.14-slim AS backend-builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -43,35 +43,30 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM python:3.14-slim
 
 # Create non-root user
-RUN addgroup --system app && adduser --system --ingroup app app
+RUN groupadd -g 1003 saudi && \ 
+    useradd --uid 1003 -g saudi -s /usr/sbin/nologin saudi 
 
 WORKDIR /app
 
 # Copy backend packages from builder
-COPY --from=backend-builder /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
+COPY --from=backend-builder /usr/local /usr/local
 COPY --from=backend-builder /usr/local/bin /usr/local/bin
 
 # Copy backend application code
-COPY --chown=app:app app ./app
+COPY --chown=saudi:saudi app ./app
 
 # Copy built frontend from the frontend-builder stage
 COPY --from=frontend-builder /app/build ./public
 
 # Switch to non-root user
-USER app
+USER saudi
 
 # Expose port for the application
 EXPOSE 7070
 
 # Healthcheck to ensure the application is running
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD python3 - <<EOF
-import urllib.request, sys
-try:
-    urllib.request.urlopen("http://localhost:7070/health")
-except:
-    sys.exit(1)
-EOF
+  CMD curl -f http://localhost:7070/health || exit 1
 
-# Run Gunicorn with Uvicorn workers for production
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-w", "4", "app.main:app", "-b", "0.0.0.0:7070", "--log-level", "info"]
+
+CMD ["uvicorn", "app:main.app", "--host", "0.0.0.0", "--port", "7070", "--log-level", "info"]
