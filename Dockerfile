@@ -58,7 +58,7 @@ COPY --from=backend-builder /usr/local/bin /usr/local/bin
 COPY --chown=saudi:saudi app ./app
 
 # Copy built frontend from the frontend-builder stage
-COPY --from=frontend-builder /app/build ./public
+COPY --from=frontend-builder /app/dist ./public
 
 # Switch to non-root user
 USER saudi
