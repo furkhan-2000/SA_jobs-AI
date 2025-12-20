@@ -65,6 +65,9 @@ COPY --chown=saudi:saudi app ./app
 # Copy built frontend from the frontend-builder stage (use 'build' not 'dist')
 COPY --from=frontend-builder /app/build ./public
 
+#Give saudi user ownership of /app directory
+RUN chown -R saudi:saudi /app
+
 # Switch to non-root user
 USER saudi
 
