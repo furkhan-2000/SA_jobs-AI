@@ -26,6 +26,7 @@ FROM python:3.14-slim AS backend-builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 
 # Install build tools for Python packages, if needed
 RUN apt-get update && \
