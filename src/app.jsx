@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import SearchFilter from "./components/SearchFilter";
-import JobList from "./components/JobList";
-import Pagination from "./components/Pagination";
+import Header from "./components/Header.jsx";
+import Footer from "./components/Footer.jsx";
+import SearchFilter from "./components/SearchFilter.jsx";
+import JobList from "./components/JobList.jsx";
+import Pagination from "./components/Pagination.jsx";
 import { fetchJobs } from "./api";
 
 export default function App(){
