@@ -12,6 +12,7 @@ COPY package.json package-lock.json* ./
 RUN npm install --quiet 
 
 # Copy the rest of the frontend code
+COPY index.html ./
 COPY public ./public
 COPY src ./src
 
