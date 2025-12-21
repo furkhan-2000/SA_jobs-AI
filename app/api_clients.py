@@ -42,8 +42,7 @@ class JobAPIClients:
             "app_id": app_id,
             "app_key": app_key,
             "results_per_page": 50,
-            "where": "saudi arabia",
-            "country": "sa"
+            "where": "saudi arabia"
         }
         data = await async_get_json(url, params=params)
         if isinstance(data, dict):

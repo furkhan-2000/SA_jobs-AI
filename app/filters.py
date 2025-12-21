@@ -15,18 +15,11 @@ def filter_ksa_remote(raw_job: dict) -> bool:
         logger.exception(f"filter_ksa_remote failed: {e}")
     return False
 
-def apply_search_filter(jobs: List[dict], keyword: str | None = None,
-                        job_type: str | None = None, industry: str | None = None) -> List[dict]:
+def apply_search_filter(jobs: List[dict], keyword: str | None = None) -> List[dict]:
     if not jobs:
         return []
     res = jobs
     if keyword:
         k = keyword.lower()
         res = [j for j in res if k in (j.get("title","")+" "+j.get("company","")+" "+j.get("description","")).lower()]
-    if job_type:
-        jt = job_type.lower()
-        res = [j for j in res if jt in str(j.get("jobType","")).lower()]
-    if industry:
-        it = industry.lower()
-        res = [j for j in res if it in str(j.get("jobIndustry","")).lower()]
     return res

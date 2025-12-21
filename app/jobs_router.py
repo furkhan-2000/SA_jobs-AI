@@ -11,8 +11,6 @@ router = APIRouter()
 @router.get("/")
 async def get_jobs(
     keyword: str | None = Query(None),
-    job_type: str | None = Query(None),
-    industry: str | None = Query(None),
     page: int = Query(1, ge=1),
     page_size: int = Query(settings.PAGE_SIZE, ge=1, le=100)
 ):
@@ -23,7 +21,7 @@ async def get_jobs(
         logger.exception("get_jobs.fetch_all_jobs failed: %s", str(e))
         all_jobs = []
 
-    filtered = apply_search_filter(all_jobs, keyword, job_type, industry)
+    filtered = apply_search_filter(all_jobs, keyword)
     total = len(filtered)
     start = (page - 1) * page_size
     page_items = filtered[start:start + page_size]

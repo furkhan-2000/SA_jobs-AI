@@ -7,8 +7,6 @@ export async function fetchJobs(params = {}) {
     const res = await axios.get(`${API_BASE}/jobs/`, {
       params: {
         keyword: params.keyword || undefined,
-        job_type: params.job_type || undefined,
-        industry: params.industry || undefined,
         page: params.page || 1,
         page_size: params.page_size || 20
       },

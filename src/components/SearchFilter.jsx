@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function SearchFilter({ keyword, setKeyword, jobType, setJobType, industry, setIndustry, onSearch }) {
+export default function SearchFilter({ keyword, setKeyword, onSearch }) {
     return (
         <div className="search-filter">
             <input
@@ -8,18 +8,6 @@ export default function SearchFilter({ keyword, setKeyword, jobType, setJobType,
                 placeholder="Search jobs..."
                 value={keyword}
                 onChange={e => setKeyword(e.target.value)}
-            />
-            <input
-                type="text"
-                placeholder="Job type..."
-                value={jobType}
-                onChange={e => setJobType(e.target.value)}
-            />
-            <input
-                type="text"
-                placeholder="Industry..."
-                value={industry}
-                onChange={e => setIndustry(e.target.value)}
             />
             <button onClick={onSearch}>Search</button>
         </div>

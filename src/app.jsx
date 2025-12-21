@@ -11,8 +11,6 @@ export default function App() {
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [keyword, setKeyword] = useState("");
-  const [jobType, setJobType] = useState("");
-  const [industry, setIndustry] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [total, setTotal] = useState(0);
@@ -22,8 +20,6 @@ export default function App() {
     try {
       const res = await fetchJobs({
         keyword,
-        job_type: jobType,
-        industry,
         page,
         page_size: pageSize,
       });
@@ -52,7 +48,7 @@ export default function App() {
     } else {
       setPage(1);
     }
-  }, [keyword, jobType, industry]);
+  }, [keyword]);
 
   return (
     <div className="app">
@@ -61,10 +57,6 @@ export default function App() {
         <SearchFilter
           keyword={keyword}
           setKeyword={setKeyword}
-          jobType={jobType}
-          setJobType={setJobType}
-          industry={industry}
-          setIndustry={setIndustry}
           onSearch={() => {
             setPage(1);
             load();
