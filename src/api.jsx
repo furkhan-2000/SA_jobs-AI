@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = (window.__API_BASE__ && window.__API_BASE__.backend) || "http://localhost:7070";
+const API_BASE = "";
 
 export async function fetchJobs(params = {}) {
   try {
