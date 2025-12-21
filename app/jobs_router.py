@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from app.job_service import fetch_all_jobs
-from app.filters import apply_search_filter
+
 from app.analytics import compute_analytics
 from app.config import settings
 from app.utils import logger
