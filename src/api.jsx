@@ -5,11 +5,7 @@ const API_BASE = (window.__API_BASE__ && window.__API_BASE__.backend) || "http:/
 export async function fetchJobs(params = {}) {
   try {
     const res = await axios.get(`${API_BASE}/jobs/`, {
-      params: {
-        keyword: params.keyword || undefined,
-        page: params.page || 1,
-        page_size: params.page_size || 20
-      },
+      params: {},
       timeout: 20000
     });
     return res.data || { jobs: [], stats: {}, count: 0 };

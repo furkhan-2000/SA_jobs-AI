@@ -9,11 +9,7 @@ import asyncio
 router = APIRouter()
 
 @router.get("/")
-async def get_jobs(
-    keyword: str | None = Query(None),
-    page: int = Query(1, ge=1),
-    page_size: int = Query(settings.PAGE_SIZE, ge=1, le=100)
-):
+async def get_jobs():
     # fetch (async) - note: in-memory only, no DB
     try:
         all_jobs = await fetch_all_jobs()
@@ -21,15 +17,10 @@ async def get_jobs(
         logger.exception("get_jobs.fetch_all_jobs failed: %s", str(e))
         all_jobs = []
 
-    filtered = apply_search_filter(all_jobs, keyword)
-    total = len(filtered)
-    start = (page - 1) * page_size
-    page_items = filtered[start:start + page_size]
-    stats = compute_analytics(filtered)
+    # Filtering and pagination are now handled by the frontend
+    stats = compute_analytics(all_jobs)
     return {
-        "count": total,
-        "page": page,
-        "page_size": page_size,
-        "jobs": page_items,
+        "count": len(all_jobs),
+        "jobs": all_jobs,
         "stats": stats
     }
