@@ -75,7 +75,7 @@ export default function App() {
             <div className="card stats">
               <h3>Analytics</h3>
               {/* Stats now reflect allFetchedJobs (before client-side filtering) */}
-              <div>Total jobs (found by APIs): {stats.count || 0}</div>
+              <div>Total jobs (found by APIs): {stats.total_jobs || 0}</div>
               <div style={{ marginTop: 8 }}>
                 <strong>Top companies</strong>
                 <ul className="compact-list">
