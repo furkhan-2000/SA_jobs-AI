@@ -13,3 +13,9 @@ LATER @ PROD correct this in code ...
 👉 The **API checks the token** to make sure it’s valid and belongs to that user.  
 
 In simple terms: **Login once → get token → API uses that token to verify you.**
+
+more sources :: 
+I’ve noted that these platforms provide free APIs:
+- RemoteOK.io
+- Wellfound (AngelList)
+- We Work Remotely
