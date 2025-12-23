@@ -1,3 +1,4 @@
+from typing import List, Dict, Callable, Iterable
 from app.api_clients import JobAPIClients
 from app.filters import filter_ksa_remote
 from app.utils import logger

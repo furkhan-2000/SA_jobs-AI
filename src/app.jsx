@@ -47,8 +47,8 @@ export default function App() {
         (job.company || "").toLowerCase().includes(lowerKeyword) ||
         (job.description || "").toLowerCase().includes(lowerKeyword);
 
-      const jobTypeMatch = !jobTypeFilter || (job.jobType || "") === jobTypeFilter;
-      const locationMatch = !locationFilter || (job.location || "") === locationFilter;
+      const jobTypeMatch = !jobTypeFilter || (job.jobType || "").toLowerCase().includes(jobTypeFilter.toLowerCase());
+      const locationMatch = !locationFilter || (job.location || "").toLowerCase().includes(locationFilter.toLowerCase());
 
       return keywordMatch && jobTypeMatch && locationMatch;
     });
