@@ -45,7 +45,11 @@ async def async_get_json(
                 return orjson.loads(resp.content)
             except Exception:
                 return resp.json()
-        except Exception as e:
+        except httpx.HTTPStatusError as e: # Catch specific HTTP status errors
+            last_exc = e
+            logger.warning(f"async_get_json (method: {method}) attempt {attempt} failed for {url} with status {e.response.status_code}: {e}")
+            await asyncio.sleep(min(2 ** attempt, 8))
+        except Exception as e: # Catch other exceptions
             last_exc = e
             logger.warning(f"async_get_json (method: {method}) attempt {attempt} failed for {url}: {e}")
             await asyncio.sleep(min(2 ** attempt, 8))

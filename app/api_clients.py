@@ -9,6 +9,8 @@ class JobAPIClients:
     async def fetch_arbeitnow() -> List[Any]:
         url = "https://www.arbeitnow.com/api/job-board-api"
         data = await async_get_json(url)
+        if settings.DEBUG_MODE and data: # Log raw data only if DEBUG_MODE is True and data is not None/empty
+            logger.debug(f"Arbeitnow raw data: {data}")
         if isinstance(data, dict):
             return data.get("data", []) or []
         if isinstance(data, list):
@@ -20,6 +22,8 @@ class JobAPIClients:
         url = "https://jobicy.com/api/v2/remote-jobs"
         params = {"count":50, "geo":"emea"}
         data = await async_get_json(url, params=params)
+        if settings.DEBUG_MODE and data: # Log raw data only if DEBUG_MODE is True and data is not None/empty
+            logger.debug(f"Jobicy raw data: {data}")
         if isinstance(data, dict):
             return data.get("data", []) or []
         return []
@@ -28,6 +32,8 @@ class JobAPIClients:
     async def fetch_remotive() -> List[Any]:
         url = "https://remotive.com/api/remote-jobs"
         data = await async_get_json(url)
+        if settings.DEBUG_MODE and data: # Log raw data only if DEBUG_MODE is True and data is not None/empty
+            logger.debug(f"Remotive raw data: {data}")
         if isinstance(data, dict):
             return data.get("jobs", []) or []
         return []
@@ -45,6 +51,8 @@ class JobAPIClients:
             "where": "saudi arabia"
         }
         data = await async_get_json(url, params=params)
+        if settings.DEBUG_MODE and data: # Log raw data only if DEBUG_MODE is True and data is not None/empty
+            logger.debug(f"Adzuna raw data: {data}")
         if isinstance(data, dict):
             return data.get("results", []) or []
         return []
@@ -59,6 +67,8 @@ class JobAPIClients:
         # Jooble requires a POST request with a JSON body
         json_data = {"keywords": "it software developer", "location": "Saudi Arabia"}
         data = await async_get_json(url, method='POST', json=json_data)
+        if settings.DEBUG_MODE and data: # Log raw data only if DEBUG_MODE is True and data is not None/empty
+            logger.debug(f"Jooble raw data: {data}")
         if isinstance(data, dict):
             return data.get("jobs", []) or data.get("data", []) or []
         return []
@@ -79,6 +89,8 @@ class JobAPIClients:
             "user_agent": "Mozilla/5.0"
         }
         data = await async_get_json(url, params=params)
+        if settings.DEBUG_MODE and data: # Log raw data only if DEBUG_MODE is True and data is not None/empty
+            logger.debug(f"Careerjet raw data: {data}")
         if isinstance(data, dict):
             return data.get("jobs", []) or []
         return []
@@ -93,6 +105,8 @@ class JobAPIClients:
         headers = {"X-Api-Key": key}
         params = {"limit":50, "locale":"sa"}
         data = await async_get_json(url, headers=headers, params=params)
+        if settings.DEBUG_MODE and data: # Log raw data only if DEBUG_MODE is True and data is not None/empty
+            logger.debug(f"OpenWebNinja raw data: {data}")
         if isinstance(data, dict):
             # common keys used by Ninja
             return data.get("results", []) or data.get("data", []) or data.get("jobs", []) or []

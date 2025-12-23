@@ -3,6 +3,7 @@ import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import SearchFilter from "./components/SearchFilter.jsx";
 import JobList from "./components/JobList.jsx";
+import SkeletonJobList from "./components/SkeletonJobList.jsx"; // Import SkeletonJobList
 // Pagination is removed as per client-side filtering
 // import Pagination from "./components/Pagination.jsx";
 import { fetchJobs } from "./api";
@@ -12,6 +13,8 @@ export default function App() {
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [keyword, setKeyword] = useState("");
+  const [jobTypeFilter, setJobTypeFilter] = useState(""); // New state for job type filter
+  const [locationFilter, setLocationFilter] = useState(""); // New state for location filter
   // Pagination states removed: page, pageSize, total
 
   async function loadAllJobs() {
@@ -35,18 +38,21 @@ export default function App() {
     loadAllJobs();
   }, []); // Empty dependency array means this runs once on mount
 
-  // Client-side filtering based on keyword
+  // Client-side filtering based on keyword, job type, and location
   const filteredJobs = useMemo(() => {
-    if (!keyword) {
-      return allFetchedJobs;
-    }
     const lowerKeyword = keyword.toLowerCase();
-    return allFetchedJobs.filter(job =>
-      (job.title || "").toLowerCase().includes(lowerKeyword) ||
-      (job.company || "").toLowerCase().includes(lowerKeyword) ||
-      (job.description || "").toLowerCase().includes(lowerKeyword)
-    );
-  }, [allFetchedJobs, keyword]);
+    return allFetchedJobs.filter(job => {
+      const keywordMatch = !keyword ||
+        (job.title || "").toLowerCase().includes(lowerKeyword) ||
+        (job.company || "").toLowerCase().includes(lowerKeyword) ||
+        (job.description || "").toLowerCase().includes(lowerKeyword);
+
+      const jobTypeMatch = !jobTypeFilter || (job.jobType || "") === jobTypeFilter;
+      const locationMatch = !locationFilter || (job.location || "") === locationFilter;
+
+      return keywordMatch && jobTypeMatch && locationMatch;
+    });
+  }, [allFetchedJobs, keyword, jobTypeFilter, locationFilter]);
 
   return (
     <div className="app">
@@ -55,13 +61,19 @@ export default function App() {
         <SearchFilter
           keyword={keyword}
           setKeyword={setKeyword}
+          jobTypeFilter={jobTypeFilter} // Pass job type filter state
+          setJobTypeFilter={setJobTypeFilter} // Pass job type filter setter
+          locationFilter={locationFilter} // Pass location filter state
+          setLocationFilter={setLocationFilter} // Pass location filter setter
+          jobTypes={Object.keys(stats.jobs_per_type || {})}
+          locations={Object.keys(stats.jobs_per_location || {})}
           // onSearch no longer needs to setPage(1) as filtering is client-side
           onSearch={() => { /* Filtering happens automatically on keyword change */ }}
         />
         <div className="content">
           <div className="left">
             {loading ? (
-              <div className="loading">Loading…</div>
+              <SkeletonJobList count={5} /> // Use SkeletonJobList here
             ) : filteredJobs.length === 0 ? (
               <div className="no-results">
                 No jobs found matching your search. Try a different keyword.
