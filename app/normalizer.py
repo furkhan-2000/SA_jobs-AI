@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict
 
 def _normalize_default(raw: Dict, source: str) -> Dict:
     """Default normalizer for common field names."""
@@ -11,7 +11,7 @@ def _normalize_default(raw: Dict, source: str) -> Dict:
     location = raw.get("location") or raw.get("jobGeo") or raw.get("candidate_required_location") or ""
     remote = raw.get("remote") if isinstance(raw.get("remote"), bool) else ("remote" in str(location).lower())
     pub_date = raw.get("pubDate") or raw.get("publication_date") or raw.get("date") or None
-    
+
     return {
         "source": source,
         "title": str(title).strip(),
@@ -25,12 +25,15 @@ def _normalize_default(raw: Dict, source: str) -> Dict:
         "pubDate": pub_date,
     }
 
-def normalize_adzuna(raw: Dict) -> Dict:
+def normalize_adzuna(raw: Dict, source: str) -> Dict:
     """Normalizer for Adzuna API data."""
-    normalized = _normalize_default(raw, "adzuna")
+    # Start with default normalization
+    normalized = _normalize_default(raw, source)
+    
+    # Override with Adzuna-specific fields
     normalized.update({
-        "company": raw.get("company", {}).get("display_name", ""),
-        "location": raw.get("location", {}).get("display_name", ""),
+        "company": raw.get("company", {}).get("display_name", "") if isinstance(raw.get("company"), dict) else "",
+        "location": raw.get("location", {}).get("display_name", "") if isinstance(raw.get("location"), dict) else "",
         "url": raw.get("redirect_url", normalized["url"]),
     })
     return normalized
@@ -44,12 +47,9 @@ def normalize_job(raw: Dict, source: str) -> Dict:
         "adzuna": normalize_adzuna,
         # Add other specific normalizers here if needed in the future
     }
-    
-    # Use a specific normalizer if available, otherwise use the default
+
+    # Get the appropriate normalizer (defaults to _normalize_default)
     normalizer_func = normalizers.get(source, _normalize_default)
-    
-    # Correctly call the normalizer with the right number of arguments
-    if normalizer_func == _normalize_default:
-        return normalizer_func(raw, source)
-    else:
-        return normalizer_func(raw)
+
+    # ALL normalizers now accept (raw, source)
+    return normalizer_func(raw, source)
