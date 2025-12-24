@@ -48,4 +48,8 @@ def normalize_job(raw: Dict, source: str) -> Dict:
     # Use a specific normalizer if available, otherwise use the default
     normalizer_func = normalizers.get(source, _normalize_default)
     
-    return normalizer_func(raw)
+    # Correctly call the normalizer with the right number of arguments
+    if normalizer_func == _normalize_default:
+        return normalizer_func(raw, source)
+    else:
+        return normalizer_func(raw)
