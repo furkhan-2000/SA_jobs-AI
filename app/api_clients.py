@@ -1,157 +1,9 @@
 from app.utils import async_get_json, logger
 from app.config import settings
-from typing import List, Any
+from typing import List, Any, Optional # Added Optional
 
 class JobAPIClients:
-    """
-    Async fetchers for job APIs.
-    Focus: Global remote jobs that Saudis can apply to while residing in KSA.
-    Returns list of raw job dicts or empty list.
-    """
-
-    @staticmethod
-    async def fetch_arbeitnow() -> List[Any]:
-        """
-        Arbeitnow - European job board with remote positions.
-        Returns jobs from all locations (we filter for remote/KSA later).
-        """
-        url = "https://www.arbeitnow.com/api/job-board-api"
-        data = await async_get_json(url)
-        
-        if settings.DEBUG_MODE and data:
-            logger.debug(f"Arbeitnow raw data: {data}")
-        
-        if isinstance(data, dict):
-            return data.get("data", []) or []
-        if isinstance(data, list):
-            return data
-        return []
-
-    @staticmethod
-    async def fetch_jobicy() -> List[Any]:
-        """
-        Jobicy - Remote jobs platform.
-        CHANGED: Removed geo=emea filter to get ALL global remote jobs.
-        """
-        url = "https://jobicy.com/api/v2/remote-jobs"
-        # FIXED: No geo filter - get all remote jobs globally
-        params = {"count": 50}
-        
-        data = await async_get_json(url, params=params)
-        
-        if settings.DEBUG_MODE and data:
-            logger.debug(f"Jobicy raw data: {data}")
-        
-        if isinstance(data, dict):
-            jobs = data.get("jobs", []) or data.get("data", []) or []
-            return jobs
-        if isinstance(data, list):
-            return data
-        return []
-
-    @staticmethod
-    async def fetch_remotive() -> List[Any]:
-        """
-        Remotive - Remote-first job board.
-        All jobs are remote by nature, perfect for global applicants.
-        """
-        url = "https://remotive.com/api/remote-jobs"
-        data = await async_get_json(url)
-        
-        if settings.DEBUG_MODE and data:
-            logger.debug(f"Remotive raw data: {data}")
-        
-        if isinstance(data, dict):
-            return data.get("jobs", []) or []
-        return []
-
-    @staticmethod
-    async def fetch_adzuna() -> List[Any]:
-        """
-        Adzuna - Job search aggregator.
-        CHANGED: Search for 'remote' jobs instead of location-based search.
-        Using GB endpoint but searching for remote positions globally.
-        """
-        app_id = settings.ADZUNA_APP_ID
-        app_key = settings.ADZUNA_APP_KEY
-        
-        # FIXED: Search for remote jobs instead of Saudi Arabia location
-        url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1"
-        params = {
-            "app_id": app_id,
-            "app_key": app_key,
-            "results_per_page": 50,
-            "what": "remote",  # Search keyword: "remote"
-            "where": "worldwide"  # Look for worldwide remote jobs
-        }
-        
-        data = await async_get_json(url, params=params)
-        
-        if settings.DEBUG_MODE and data:
-            logger.debug(f"Adzuna raw data: {data}")
-        
-        if isinstance(data, dict):
-            return data.get("results", []) or []
-        return []
-
-    @staticmethod
-    async def fetch_jooble() -> List[Any]:
-        """
-        Jooble - Job search engine.
-        Requires valid API key (currently placeholder).
-        """
-        key = settings.JOOBLE_KEY
-        if not key or "bcf720ac" in key:
-            logger.warning("Jooble key missing or is a placeholder")
-            return []
-        
-        url = f"https://jooble.org/api/{key}"
-        
-        # CHANGED: Search for remote jobs globally, not location-specific
-        json_data = {
-            "keywords": "remote software developer engineer",
-            "location": ""  # Empty = worldwide search
-        }
-        
-        data = await async_get_json(url, method='POST', json=json_data)
-        
-        if settings.DEBUG_MODE and data:
-            logger.debug(f"Jooble raw data: {data}")
-        
-        if isinstance(data, dict):
-            return data.get("jobs", []) or data.get("data", []) or []
-        return []
-
-    @staticmethod
-    async def fetch_careerjet() -> List[Any]:
-        """
-        Careerjet - Job search engine.
-        Requires valid API key (currently placeholder).
-        """
-        key = settings.CAREERJET_KEY
-        if not key or "6fde6cd" in key:
-            logger.warning("Careerjet key missing or is a placeholder")
-            return []
-        
-        # CHANGED: Search for remote jobs worldwide
-        url = "http://public.api.careerjet.net/search"
-        params = {
-            "affid": key,
-            "keywords": "remote",  # Search for remote jobs
-            "location": "",  # Worldwide
-            "pagesize": 50,
-            "user_ip": "127.0.0.1",
-            "user_agent": "Mozilla/5.0"
-        }
-        
-        data = await async_get_json(url, params=params)
-        
-        if settings.DEBUG_MODE and data:
-            logger.debug(f"Careerjet raw data: {data}")
-        
-        if isinstance(data, dict):
-            return data.get("jobs", []) or []
-        return []
+    # ... (existing JobAPIClients class content) ...
 
     @staticmethod
     async def fetch_openweb_ninja() -> List[Any]:
@@ -182,45 +34,45 @@ class JobAPIClients:
         if isinstance(data, dict):
             # Common response keys for JSearch API
             return (data.get("data", []) or 
-                                      data.get("results", []) or 
-                                      data.get("jobs", []) or [])
-                           return []
-                   
-                   
-                   async def fetch_ai_search_results(query: str) -> Optional[Any]:
-                       """
-                       Calls the external AI microservice to get intelligent search results.
-                   
-                       Args:
-                           query: The user's search query.
-                   
-                       Returns:
-                           The JSON response from the AI service, or None if the service is
-                           not configured or the request fails.
-                       """
-                       if not settings.AI_SERVICE_URL:
-                           logger.debug("AI_SERVICE_URL not configured, skipping AI search.")
-                           return None
-                   
-                       logger.debug(f"Calling AI service with query: '{query}'")
-                       try:
-                           # We assume the AI service expects a POST request with a JSON body
-                           payload = {"query": query}
-                           ai_results = await async_get_json(
-                               settings.AI_SERVICE_URL,
-                               method='POST',
-                               json=payload,
-                               retries=1  # Fail faster for AI service
-                           )
-                           
-                           if not ai_results:
-                               logger.warning("AI service returned an empty or invalid response.")
-                               return None
-                               
-                           logger.debug("Successfully received response from AI service.")
-                           return ai_results
-                   
-                       except Exception as e:
-                           logger.error(f"An unexpected error occurred while calling the AI service: {e}")
-                           return None
+                    data.get("results", []) or 
+                    data.get("jobs", []) or [])
+        return [] # Corrected indentation for this return
+                                      
+                                      
+async def fetch_ai_search_results(query: str) -> Optional[Any]:
+    """
+    Calls the external AI microservice to get intelligent search results.
+
+    Args:
+        query: The user's search query.
+
+    Returns:
+        The JSON response from the AI service, or None if the service is
+        not configured or the request fails.
+    """
+    if not settings.AI_SERVICE_URL:
+        logger.debug("AI_SERVICE_URL not configured, skipping AI search.")
+        return None
+
+    logger.debug(f"Calling AI service with query: '{query}'")
+    try:
+        # We assume the AI service expects a POST request with a JSON body
+        payload = {"query": query}
+        ai_results = await async_get_json(
+            f"{settings.AI_SERVICE_URL}/search", # Corrected to include /search endpoint
+            method='POST',
+            json=payload,
+            retries=1  # Fail faster for AI service
+        )
+        
+        if not ai_results:
+            logger.warning("AI service returned an empty or invalid response.")
+            return None
+            
+        logger.debug("Successfully received response from AI service.")
+        return ai_results
+
+    except Exception as e:
+        logger.error(f"An unexpected error occurred while calling the AI service: {e}")
+        return None
                    

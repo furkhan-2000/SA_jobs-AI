@@ -38,10 +38,10 @@ async def get_jobs(query: Optional[str] = None):
             filtered_jobs = [job_map[key] for key in ai_job_keys if key in job_map]
             
             logger.info(f"AI search successful. Found {len(filtered_jobs)} matching jobs.")
-            stats = compute_analytics(filtered_jobs)
+            # Stats are now computed on the ALL_JOBS list, not the filtered list
             return {
                 "jobs": filtered_jobs,
-                "stats": stats,
+                "stats": compute_analytics(all_jobs), # Compute stats on all_jobs
                 "ai_powered": True
             }
         else:
@@ -49,9 +49,9 @@ async def get_jobs(query: Optional[str] = None):
     
     # Fallback case: No query, AI disabled, or AI failed.
     # Return all jobs and let the frontend handle filtering.
-    stats = compute_analytics(all_jobs)
+    # Stats are computed on the ALL_JOBS list
     return {
         "jobs": all_jobs,
-        "stats": stats,
+        "stats": compute_analytics(all_jobs), # Compute stats on all_jobs
         "ai_powered": False
     }

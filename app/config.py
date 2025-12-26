@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     DATABASE_URL: Optional[str] = None
     LOG_LEVEL: str = "INFO"
     MAX_RETRIES: int = 3
-    TIMEOUT: int = 15
+    TIMEOUT: int = 30
     PAGE_SIZE: int = 20
     ADZUNA_APP_ID: str = "34b57806"
     ADZUNA_APP_KEY: str = "a4a65342386e18a41d55e203520809ad"

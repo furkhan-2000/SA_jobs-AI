@@ -66,21 +66,27 @@ export default function App() {
 
   // 3. This effect watches for changes in the DEBOUNCED keyword.
   useEffect(() => {
-    // This is the main search logic trigger.
+    const controller = new AbortController(); // Create a new AbortController for each effect run
+    
     const performSearch = async () => {
       if (debouncedKeyword) {
         console.log(`LOG: Debounced search triggered for keyword: '${debouncedKeyword}'`);
         setLoading(true);
         try {
-          const res = await fetchJobs(debouncedKeyword);
+          const res = await fetchJobs(debouncedKeyword, controller.signal); // Pass the signal
           setDisplayJobs(res.jobs || []);
           setStats(res.stats || {});
           setIsAiPowered(res.ai_powered);
           console.log(`LOG: Search complete. AI powered: ${res.ai_powered}. Found ${res.jobs?.length} jobs.`);
         } catch (error) {
-          console.error("Error during search:", error);
-          setDisplayJobs(masterJobList); // On error, fall back to master list
-          setIsAiPowered(false);
+          // Only show error if it's not an abort error
+          if (error.name === 'CanceledError') {
+            console.log("LOG: Fetch aborted:", error.message);
+          } else {
+            console.error("Error during search:", error);
+            setDisplayJobs(masterJobList); // On error, fall back to master list
+            setIsAiPowered(false);
+          }
         } finally {
           setLoading(false);
         }
@@ -93,6 +99,12 @@ export default function App() {
     };
     
     performSearch();
+    
+    // Cleanup function: abort the request if the component unmounts or debouncedKeyword changes
+    return () => {
+      console.log("LOG: Aborting previous fetch request (cleanup).");
+      controller.abort();
+    };
     
   }, [debouncedKeyword]); // This effect ONLY runs when the debounced keyword changes.
 

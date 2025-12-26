@@ -6,7 +6,6 @@ export default function SearchFilter({
     locationFilter, setLocationFilter,
     jobTypes = [], // Default to empty array
     locations = [], // Default to empty array
-    onSearch
 }) {
     return (
         <div className="search-filter">
@@ -28,7 +27,6 @@ export default function SearchFilter({
                     <option key={location} value={location}>{location}</option>
                 ))}
             </select>
-            <button onClick={onSearch}>Search</button>
         </div>
     );
 }
