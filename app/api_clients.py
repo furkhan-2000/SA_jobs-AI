@@ -182,6 +182,45 @@ class JobAPIClients:
         if isinstance(data, dict):
             # Common response keys for JSearch API
             return (data.get("data", []) or 
-                   data.get("results", []) or 
-                   data.get("jobs", []) or [])
-        return []
+                                      data.get("results", []) or 
+                                      data.get("jobs", []) or [])
+                           return []
+                   
+                   
+                   async def fetch_ai_search_results(query: str) -> Optional[Any]:
+                       """
+                       Calls the external AI microservice to get intelligent search results.
+                   
+                       Args:
+                           query: The user's search query.
+                   
+                       Returns:
+                           The JSON response from the AI service, or None if the service is
+                           not configured or the request fails.
+                       """
+                       if not settings.AI_SERVICE_URL:
+                           logger.debug("AI_SERVICE_URL not configured, skipping AI search.")
+                           return None
+                   
+                       logger.debug(f"Calling AI service with query: '{query}'")
+                       try:
+                           # We assume the AI service expects a POST request with a JSON body
+                           payload = {"query": query}
+                           ai_results = await async_get_json(
+                               settings.AI_SERVICE_URL,
+                               method='POST',
+                               json=payload,
+                               retries=1  # Fail faster for AI service
+                           )
+                           
+                           if not ai_results:
+                               logger.warning("AI service returned an empty or invalid response.")
+                               return None
+                               
+                           logger.debug("Successfully received response from AI service.")
+                           return ai_results
+                   
+                       except Exception as e:
+                           logger.error(f"An unexpected error occurred while calling the AI service: {e}")
+                           return None
+                   

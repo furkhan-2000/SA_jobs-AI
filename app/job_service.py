@@ -47,14 +47,19 @@ async def fetch_all_jobs() -> List[Dict]:
     ]
     tasks = [_run_client(name, fn) for name, fn in clients]
     results = await asyncio.gather(*tasks, return_exceptions=False)
+    
     flattened: List[Dict] = []
     for r in results:
         flattened.extend(r)
-    # dedupe by SHA256 fingerprint
-    unique = {}
+        
+    # Add 'dedup_key' to each job and then deduplicate
+    unique_jobs = {}
     for job in flattened:
+        # The fingerprint serves as our unique identifier or "dedup_key"
         key = _fingerprint(job)
-        if key not in unique:
-            unique[key] = job
-    logger.info(f"fetch_all_jobs: unique_count={len(unique)}")
-    return list(unique.values())
+        if key not in unique_jobs:
+            job['dedup_key'] = key  # Store the key in the job dictionary
+            unique_jobs[key] = job
+            
+    logger.info(f"fetch_all_jobs: unique_count={len(unique_jobs)}")
+    return list(unique_jobs.values())

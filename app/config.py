@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     CAREERJET_KEY: str = "6fde6cdcf3154cacfe7c6fe002c3c86c"
     OPENWEBNINJA_KEY: str = "ak_q7f0dwbhl7k7txtot1sp5ltun9lr7rwlgz2070mx1l3b53w"
     DEBUG_MODE: bool = True
+    AI_SERVICE_URL: Optional[str] = None  # TODO: Replace with the internal K8s DNS name for the AI microservice
 
     class Config:
         env_file = ".env"
