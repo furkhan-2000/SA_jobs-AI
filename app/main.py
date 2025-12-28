@@ -74,14 +74,6 @@ async def health_check():
     return {"status": "ok"}
 
 # --------------------------------------------------------
-# Root Endpoint - moved before static files to be reachable
-# --------------------------------------------------------
-@app.get("/")
-async def root():
-    return {"status": "alive", "service": "KSA Jobs Backend"}
-
-
-# --------------------------------------------------------
 # Routers
 # --------------------------------------------------------
 app.include_router(jobs_router, prefix="/jobs", tags=["Jobs"])

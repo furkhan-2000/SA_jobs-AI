@@ -10,9 +10,25 @@ import sys # Added import for sys
 console = Console()
 
 # Configure loguru
+log_level = "DEBUG" if settings.DEBUG_MODE else settings.LOG_LEVEL
 logger.remove() # Remove default handler
-logger.add(sys.stderr, level=settings.LOG_LEVEL, format="{time} {level} {message}") # Add stderr handler
-logger.add("ksa_jobs.log", rotation="10 MB", retention="7 days", level=settings.LOG_LEVEL) # Add file handler
+logger.add(
+    sys.stderr, 
+    level=log_level, 
+    format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
+) # Add a more detailed stderr handler
+
+# Add file handler with more details in debug mode
+file_log_config = {
+    "rotation": "10 MB",
+    "retention": "7 days",
+    "level": log_level
+}
+if settings.DEBUG_MODE:
+    file_log_config["backtrace"] = True
+    file_log_config["diagnose"] = True
+
+logger.add("ksa_jobs.log", **file_log_config)
 
 # Intercept standard logging messages and redirect to loguru
 logger.enable("app") # Enable loguru for the 'app' module and its submodules
