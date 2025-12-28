@@ -7,12 +7,14 @@ import uvicorn
 from .jobs_router import router as jobs_router
 from .cron import start_scheduler
 from .utils import logger, close_httpx_client
-from .config import settings # Import settings
+from .config import settings  # Import settings
+
 
 # --------------------------------------------------------
 # FastAPI App Initialization
 # --------------------------------------------------------
 app = FastAPI(title="KSA Jobs API", version="1.0")
+
 
 # --------------------------------------------------------
 # CORS Middleware (Required for Frontend)
@@ -24,6 +26,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # --------------------------------------------------------
 # Logging Middleware (Each Request)
@@ -40,6 +43,7 @@ async def log_requests(request: Request, call_next):
 
     logger.info(f"Completed request: {response.status_code}")
     return response
+
 
 # --------------------------------------------------------
 # Global Error Handler
@@ -66,6 +70,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         content=content,
     )
 
+
 # --------------------------------------------------------
 # Health Check Endpoint
 # --------------------------------------------------------
@@ -73,15 +78,18 @@ async def global_exception_handler(request: Request, exc: Exception):
 async def health_check():
     return {"status": "ok"}
 
+
 # --------------------------------------------------------
 # Routers
 # --------------------------------------------------------
 app.include_router(jobs_router, prefix="/jobs", tags=["Jobs"])
 
+
 # --------------------------------------------------------
 # Static Files Mount (Order Matters)
 # --------------------------------------------------------
 app.mount("/", StaticFiles(directory="public", html=True), name="public")
+
 
 # --------------------------------------------------------
 # Scheduler Startup
@@ -90,6 +98,7 @@ app.mount("/", StaticFiles(directory="public", html=True), name="public")
 async def startup_event():
     logger.info("Starting job scheduler...")
     start_scheduler()
+
 
 # --------------------------------------------------------
 # Shutdown Events

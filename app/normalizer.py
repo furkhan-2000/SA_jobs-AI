@@ -1,10 +1,12 @@
 from typing import Dict
 
+
 def _to_str_or_empty(value) -> str:
     """Converts a value to a stripped string, handling None by returning an empty string."""
     if value is None:
         return ""
     return str(value).strip()
+
 
 def _normalize_default(raw: Dict, source: str) -> Dict:
     """Default normalizer for common field names."""
@@ -31,11 +33,12 @@ def _normalize_default(raw: Dict, source: str) -> Dict:
         "pubDate": pub_date,
     }
 
+
 def normalize_adzuna(raw: Dict, source: str) -> Dict:
     """Normalizer for Adzuna API data."""
     # Start with default normalization
     normalized = _normalize_default(raw, source)
-    
+
     # Override with Adzuna-specific fields
     normalized.update({
         "company": (raw.get("company") or {}).get("display_name", ""),
@@ -43,6 +46,7 @@ def normalize_adzuna(raw: Dict, source: str) -> Dict:
         "url": raw.get("redirect_url", normalized["url"]),
     })
     return normalized
+
 
 def normalize_job(raw: Dict, source: str) -> Dict:
     """
