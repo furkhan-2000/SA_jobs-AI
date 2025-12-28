@@ -59,6 +59,105 @@ def _contains_keyword(text: str, keywords: tuple) -> bool:
         return False
 
 
+def _extract_job_text_fields(raw_job: dict) -> tuple[str, str, str, str, str]:
+    """Helper to safely extract and normalize job text fields."""
+    loc_raw = (
+        raw_job.get("location")
+        or raw_job.get("candidate_required_location")
+        or raw_job.get("jobGeo")
+        or raw_job.get("jobLocation")
+        or ""
+    )
+    if isinstance(loc_raw, dict):
+        loc = (
+            loc_raw.get("display_name") or loc_raw.get("name") or loc_raw.get("city") or ""
+        )
+        if not loc and "area" in loc_raw:
+            area = loc_raw.get("area", [])
+            if isinstance(area, list) and area:
+                loc = " ".join(str(x) for x in area)
+        if not loc:
+            loc = loc_raw.get("country", "")
+    else:
+        loc = str(loc_raw)
+    loc = loc.lower().strip()
+
+    job_type = str(
+        raw_job.get("jobType")
+        or raw_job.get("type")
+        or raw_job.get("job_type")
+        or raw_job.get("employment_type")
+        or raw_job.get("workType")
+        or ""
+    ).lower().strip()
+
+    title = str(
+        raw_job.get("title")
+        or raw_job.get("jobTitle")
+        or raw_job.get("name")
+        or ""
+    ).lower().strip()
+
+    category = str(
+        raw_job.get("category")
+        or raw_job.get("jobCategory")
+        or raw_job.get("jobIndustry")
+        or ""
+    ).lower().strip()
+
+    description = str(
+        raw_job.get("description")
+        or raw_job.get("jobDescription")
+        or ""
+    ).lower().strip()
+    description = description[:500] if description else ""
+
+    return loc, job_type, title, category, description
+
+
+def is_ksa_on_site_job(raw_job: dict) -> bool:
+    """
+    Determines if a job is primarily an 'On-site KSA' type.
+    A job is considered On-site KSA if it strongly implies a KSA or regional location
+    and does NOT strongly imply remote work.
+    """
+    loc, job_type, title, category, description = _extract_job_text_fields(raw_job)
+
+    is_ksa_located = (_contains_keyword(loc, KSA_LOCATION_KEYWORDS) or
+                      _contains_keyword(loc, REGIONAL_KEYWORDS))
+
+    is_explicitly_remote = (
+        raw_job.get("remote") is True or
+        str(raw_job.get("remote")).lower() == "true" or
+        _contains_keyword(loc, REMOTE_KEYWORDS) or
+        _contains_keyword(job_type, REMOTE_KEYWORDS) or
+        _contains_keyword(title, REMOTE_KEYWORDS) or
+        _contains_keyword(description, REMOTE_KEYWORDS)
+    )
+    
+    # It's "On-site KSA" if it's KSA-located AND NOT explicitly remote.
+    return is_ksa_located and not is_explicitly_remote
+
+
+def is_truly_remote_job(raw_job: dict) -> bool:
+    """
+    Determines if a job is a 'Remote' type.
+    A job is considered Remote if it has a remote flag or strongly implies remote work.
+    """
+    loc, job_type, title, category, description = _extract_job_text_fields(raw_job)
+
+    is_explicitly_remote = (
+        raw_job.get("remote") is True or
+        str(raw_job.get("remote")).lower() == "true" or
+        _contains_keyword(loc, REMOTE_KEYWORDS) or
+        _contains_keyword(job_type, REMOTE_KEYWORDS) or
+        _contains_keyword(title, REMOTE_KEYWORDS) or
+        _contains_keyword(description, REMOTE_KEYWORDS)
+    )
+    # If it's explicitly remote, classify it as Remote.
+    return is_explicitly_remote
+
+
 def filter_ksa_remote(raw_job: dict) -> bool:
     """
     Filter to show jobs that Saudi residents can apply to:
@@ -77,96 +176,8 @@ def filter_ksa_remote(raw_job: dict) -> bool:
         True if job should be shown to Saudi users, False otherwise
     """
     try:
-        loc_raw = (
-            raw_job.get("location")
-            or raw_job.get("candidate_required_location")
-            or raw_job.get("jobGeo")
-            or raw_job.get("jobLocation")
-            or ""
-        )
-
-        # Handle structured location objects (e.g., Adzuna returns dict)
-        if isinstance(loc_raw, dict):
-            # Try multiple possible keys for location
-            loc = (
-                loc_raw.get("display_name")
-                or loc_raw.get("name")
-                or loc_raw.get("city")
-                or ""
-            )
-
-            # Fallback to area array if main location is empty
-            if not loc and "area" in loc_raw:
-                area = loc_raw.get("area", [])
-                if isinstance(area, list) and area:
-                    loc = " ".join(str(x) for x in area)
-
-            # Last fallback: country
-            if not loc:
-                loc = loc_raw.get("country", "")
-        else:
-            loc = str(loc_raw)
-
-        loc = loc.lower().strip()
-
-        job_type = str(
-            raw_job.get("jobType")
-            or raw_job.get("type")
-            or raw_job.get("job_type")
-            or raw_job.get("employment_type")
-            or raw_job.get("workType")
-            or ""
-        ).lower().strip()
-
-        title = str(
-            raw_job.get("title")
-            or raw_job.get("jobTitle")
-            or raw_job.get("name")
-            or ""
-        ).lower().strip()
-
-        category = str(
-            raw_job.get("category")
-            or raw_job.get("jobCategory")
-            or raw_job.get("jobIndustry")
-            or ""
-        ).lower().strip()
-
-        description = str(
-            raw_job.get("description")
-            or raw_job.get("jobDescription")
-            or ""
-        ).lower().strip()
-
-        # Take only first 500 chars of description to avoid performance issues
-        description = description[:500] if description else ""
-
-        if _contains_keyword(loc, KSA_LOCATION_KEYWORDS):
-            return True
-
-        if _contains_keyword(loc, REGIONAL_KEYWORDS):
-            return True
-
-        remote_flag = raw_job.get("remote")
-        if remote_flag is True or str(remote_flag).lower() == "true":
-            return True
-
-        if _contains_keyword(loc, REMOTE_KEYWORDS):
-            return True
-
-        if _contains_keyword(job_type, REMOTE_KEYWORDS):
-            return True
-
-        if _contains_keyword(title, REMOTE_KEYWORDS):
-            return True
-
-        if _contains_keyword(category, REMOTE_KEYWORDS):
-            return True
-
-        if _contains_keyword(description, REMOTE_KEYWORDS):
-            return True
-
-        return False
+        # A job is relevant if it's either KSA On-site OR Truly Remote
+        return is_ksa_on_site_job(raw_job) or is_truly_remote_job(raw_job)
 
     except Exception:
         logger.exception("filter_ksa_remote failed")

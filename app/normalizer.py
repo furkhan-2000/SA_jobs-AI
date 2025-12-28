@@ -1,4 +1,5 @@
 from typing import Dict
+from app.filters import is_ksa_on_site_job, is_truly_remote_job
 
 
 def _to_str_or_empty(value) -> str:
@@ -20,6 +21,15 @@ def _normalize_default(raw: Dict, source: str) -> Dict:
     remote = raw.get("remote") if isinstance(raw.get("remote"), bool) else (location is not None and "remote" in _to_str_or_empty(location).lower())
     pub_date = raw.get("pubDate") or raw.get("publication_date") or raw.get("date") or None
 
+    # Determine jobCategory based on the new filter functions
+    job_category = ""
+    if is_truly_remote_job(raw):
+        job_category = "Remote"
+    elif is_ksa_on_site_job(raw):
+        job_category = "On-site KSA"
+    # Else, job_category remains empty, implying it shouldn't have passed initial filter_ksa_remote
+    # or is unclassifiable by these specific categories.
+
     return {
         "source": source,
         "title": _to_str_or_empty(title),
@@ -31,6 +41,7 @@ def _normalize_default(raw: Dict, source: str) -> Dict:
         "location": _to_str_or_empty(location),
         "remote": bool(remote),
         "pubDate": pub_date,
+        "jobCategory": job_category, # Add the new jobCategory field
     }
 
 

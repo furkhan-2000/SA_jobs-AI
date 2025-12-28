@@ -33,8 +33,8 @@ export default function App() {
 
   // Live user input states
   const [keyword, setKeyword] = useState("");
-  const [jobTypeFilter, setJobTypeFilter] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
+  // Changed jobTypeFilter default to "On-site KSA"
+  const [jobTypeFilter, setJobTypeFilter] = useState("On-site KSA"); 
 
   // Debounced keyword state. This will only update after the user stops typing.
   const debouncedKeyword = useDebounce(keyword, 500);
@@ -124,16 +124,14 @@ export default function App() {
         return displayJobs;
     }
 
-    // In fallback mode, apply the local filters for type and location.
-    // The keyword filter is already effectively applied by the debounced search.
-    console.log("LOG: Applying client-side filters (Job Type, Location) for fallback mode.");
+    // In fallback mode, apply the local filters for job type.
+    console.log("LOG: Applying client-side filters (Job Type) for fallback mode.");
     return displayJobs.filter(job => {
-      // Redundant keyword match is removed for performance
-      const jobTypeMatch = !jobTypeFilter || (job.jobType || "").toLowerCase().includes(jobTypeFilter.toLowerCase());
-      const locationMatch = !locationFilter || (job.location || "").toLowerCase().includes(locationFilter.toLowerCase());
-      return jobTypeMatch && locationMatch;
+      // Filter by the new jobCategory field
+      const jobTypeMatch = !jobTypeFilter || (job.jobCategory === jobTypeFilter);
+      return jobTypeMatch;
     });
-  }, [displayJobs, jobTypeFilter, locationFilter, isAiPowered]);
+  }, [displayJobs, jobTypeFilter, isAiPowered]);
 
   return (
     <div className="app">
@@ -144,10 +142,6 @@ export default function App() {
           setKeyword={setKeyword}
           jobTypeFilter={jobTypeFilter}
           setJobTypeFilter={setJobTypeFilter}
-          locationFilter={locationFilter}
-          setLocationFilter={setLocationFilter}
-          jobTypes={Object.keys(stats.jobs_per_type || {})}
-          locations={Object.keys(stats.jobs_per_location || {})}
         />
         <div className="content">
           <div className="left">
