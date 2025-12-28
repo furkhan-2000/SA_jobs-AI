@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     APP_PORT: int = 7070
     DATABASE_URL: Optional[str] = None
-    LOG_LEVEL: str = "ERROR"  # Changed to INFO
+    LOG_LEVEL: str = "ERROR"  # Changed to ERROR
     MAX_RETRIES: int = 3
     TIMEOUT: int = 15
     PAGE_SIZE: int = 20
