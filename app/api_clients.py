@@ -3,39 +3,39 @@ from app.config import settings
 from typing import List, Any, Optional # Added Optional
 
 class JobAPIClients:
-    # ... (existing JobAPIClients class content) ...
+    @staticmethod
+    async def fetch_arbeitnow() -> List[Any]:
+        logger.warning("arbeitnow API client is not implemented.")
+        return []
+
+    @staticmethod
+    async def fetch_jobicy() -> List[Any]:
+        logger.warning("jobicy API client is not implemented.")
+        return []
+
+    @staticmethod
+    async def fetch_remotive() -> List[Any]:
+        logger.warning("remotive API client is not implemented.")
+        return []
+
+    @staticmethod
+    async def fetch_adzuna() -> List[Any]:
+        logger.warning("adzuna API client is not implemented.")
+        return []
+
+    @staticmethod
+    async def fetch_jooble() -> List[Any]:
+        logger.warning("jooble API client is not implemented.")
+        return []
+
+    @staticmethod
+    async def fetch_careerjet() -> List[Any]:
+        logger.warning("careerjet API client is not implemented.")
+        return []
 
     @staticmethod
     async def fetch_openweb_ninja() -> List[Any]:
-        """
-        OpenWebNinja (JSearch) - Job search API.
-        Requires valid API key (currently expired - 401 errors).
-        """
-        key = settings.OPENWEBNINJA_KEY
-        if not key:
-            logger.warning("OpenWebNinja key missing")
-            return []
-        
-        url = "https://app.openwebninja.com/api/jsearch/search"
-        headers = {"X-Api-Key": key}
-        
-        # CHANGED: Search for remote jobs, not locale-specific
-        params = {
-            "limit": 50,
-            "query": "remote software engineer",  # Search term
-            "employment_types": "FULLTIME,PARTTIME,CONTRACTOR"
-        }
-        
-        data = await async_get_json(url, headers=headers, params=params)
-        
-        if settings.DEBUG_MODE and data:
-            logger.debug(f"OpenWebNinja raw data: {data}")
-        
-        if isinstance(data, dict):
-            # Common response keys for JSearch API
-            return (data.get("data", []) or 
-                    data.get("results", []) or 
-                    data.get("jobs", []) or [])
+        logger.warning("OpenWebNinja API is disabled due to expired key. Skipping fetch.")
         return [] # Corrected indentation for this return
                                       
                                       

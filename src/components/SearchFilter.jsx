@@ -17,14 +17,14 @@ export default function SearchFilter({
             />
             <select value={jobTypeFilter} onChange={e => setJobTypeFilter(e.target.value)}>
                 <option value="">All Job Types</option>
-                {jobTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
+                {jobTypes.map((type, index) => (
+                    <option key={`${type}-${index}`} value={type}>{type}</option>
                 ))}
             </select>
             <select value={locationFilter} onChange={e => setLocationFilter(e.target.value)}>
                 <option value="">All Locations</option>
-                {locations.map(location => (
-                    <option key={location} value={location}>{location}</option>
+                {locations.map((location, index) => (
+                    <option key={`${location}-${index}`} value={location}>{location}</option>
                 ))}
             </select>
         </div>

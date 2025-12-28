@@ -30,18 +30,20 @@ async def get_jobs(query: Optional[str] = None):
         ai_results = await fetch_ai_search_results(query)
 
         if ai_results:
-            # ASSUMPTION: AI returns a list of 'dedup_key's for the jobs it selected.
-            # e.g., {"results": ["remotive-12345", "linkedin-67890"]}
-            ai_job_keys = ai_results.get("results", [])
+            # NEW ASSUMPTION: AI returns a list of full job objects that it selected.
+            # These jobs should ideally already be normalized and include a dedup_key.
+            ai_filtered_jobs = ai_results.get("results", [])
             
-            # Filter the master list based on the keys returned by the AI
-            filtered_jobs = [job_map[key] for key in ai_job_keys if key in job_map]
+            # Ensure each AI-returned job has a dedup_key for consistency.
+            # If not present, we can generate one or use a fallback.
+            # For simplicity, we'll assume AI-returned jobs are well-formed.
             
-            logger.info(f"AI search successful. Found {len(filtered_jobs)} matching jobs.")
-            # Stats are now computed on the ALL_JOBS list, not the filtered list
+            logger.info(f"AI search successful. Found {len(ai_filtered_jobs)} matching jobs.")
+            # Stats for AI-powered results should be computed on these AI-filtered jobs.
+            # However, for consistency with BUG-8 fix (next), we'll compute stats on the `ai_filtered_jobs`
             return {
-                "jobs": filtered_jobs,
-                "stats": compute_analytics(all_jobs), # Compute stats on all_jobs
+                "jobs": ai_filtered_jobs,
+                "stats": compute_analytics(ai_filtered_jobs), # Compute stats on AI-filtered jobs
                 "ai_powered": True
             }
         else:

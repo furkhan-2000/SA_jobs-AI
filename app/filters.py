@@ -3,47 +3,46 @@ from typing import List
 from app.utils import logger
 
 KSA_LOCATION_KEYWORDS = (
-    r"\bsaudi\b",
-    r"\bksa\b", 
-    r"\briyadh\b",
-    r"\bjeddah\b",
-    r"\bdammam\b",
-    r"\bmecca\b",
-    r"\bmedina\b",
-    r"\bdhahran\b",
-    r"\bkhobar\b",
-    r"\btabuk\b",
-    r"\babha\b"
+    re.compile(r"\bsaudi\b", re.IGNORECASE),
+    re.compile(r"\bksa\b", re.IGNORECASE), 
+    re.compile(r"\briyadh\b", re.IGNORECASE),
+    re.compile(r"\bjeddah\b", re.IGNORECASE),
+    re.compile(r"\bdammam\b", re.IGNORECASE),
+    re.compile(r"\bmecca\b", re.IGNORECASE),
+    re.compile(r"\bmedina\b", re.IGNORECASE),
+    re.compile(r"\bdhahran\b", re.IGNORECASE),
+    re.compile(r"\bkhobar\b", re.IGNORECASE),
+    re.compile(r"\btabuk\b", re.IGNORECASE),
+    re.compile(r"\babha\b", re.IGNORECASE)
 )
 
 REGIONAL_KEYWORDS = (
-    r"\bgcc\b",
-    r"\bmena\b",
-    r"\bmiddle\s*east\b",
-    r"\barabian\s*gulf\b",
-    r"\bgulf\s*region\b"
+    re.compile(r"\bgcc\b", re.IGNORECASE),
+    re.compile(r"\bmena\b", re.IGNORECASE),
+    re.compile(r"\bmiddle\s*east\b", re.IGNORECASE),
+    re.compile(r"\barabian\s*gulf\b", re.IGNORECASE),
+    re.compile(r"\bgulf\s*region\b", re.IGNORECASE)
 )
 
 REMOTE_KEYWORDS = (
-    r"\bremote\b",
-    r"\bworldwide\b",
-    r"\banywhere\b",
-    r"\bglobal\b",
-    r"\bwork\s*from\s*home\b",
-    r"\bwfh\b",
-    r"\bfully\s*remote\b",
-    r"\b100%\s*remote\b"
+    re.compile(r"\bremote\b", re.IGNORECASE),
+    re.compile(r"\bworldwide\b", re.IGNORECASE),
+    re.compile(r"\banywhere\b", re.IGNORECASE),
+    re.compile(r"\bglobal\b", re.IGNORECASE),
+    re.compile(r"\bwork\s*from\s*home\b", re.IGNORECASE),
+    re.compile(r"\bwfh\b", re.IGNORECASE),
+    re.compile(r"\bfully\s*remote\b", re.IGNORECASE),
+    re.compile(r"\b100%\s*remote\b", re.IGNORECASE)
 )
 
 
 def _contains_keyword(text: str, keywords: tuple) -> bool:
     """
-    Check if text contains any keyword using regex word boundaries.
-    This prevents false positives like "arkansas" matching "ksa".
+    Check if text contains any pre-compiled regex keyword.
     
     Args:
         text: The text to search in
-        keywords: Tuple of regex patterns to search for
+        keywords: Tuple of compiled regex patterns to search for
     
     Returns:
         True if any pattern matches, False otherwise
@@ -52,7 +51,7 @@ def _contains_keyword(text: str, keywords: tuple) -> bool:
         return False
     
     try:
-        return any(re.search(pattern, text, re.IGNORECASE) for pattern in keywords)
+        return any(pattern.search(text) for pattern in keywords)
     except Exception as e:
         logger.warning(f"Regex matching failed for text '{text[:50]}...': {e}")
         return False
@@ -163,17 +162,7 @@ def filter_ksa_remote(raw_job: dict) -> bool:
             return True
         
         if _contains_keyword(description, REMOTE_KEYWORDS):
-    
-            if any(phrase in description for phrase in [
-                "work remotely",
-                "remote position",
-                "remote role",
-                "remote opportunity",
-                "100% remote",
-                "fully remote",
-                "work from anywhere"
-            ]):
-                return True
+            return True
         
         return False
         

@@ -1,26 +1,32 @@
 from typing import Dict
 
+def _to_str_or_empty(value) -> str:
+    """Converts a value to a stripped string, handling None by returning an empty string."""
+    if value is None:
+        return ""
+    return str(value).strip()
+
 def _normalize_default(raw: Dict, source: str) -> Dict:
     """Default normalizer for common field names."""
-    title = raw.get("title") or raw.get("jobTitle") or raw.get("name") or ""
-    company = raw.get("company") or raw.get("company_name") or raw.get("companyName") or ""
-    url = raw.get("url") or raw.get("jobUrl") or raw.get("link") or raw.get("apply_url") or ""
-    description = raw.get("description") or raw.get("jobDescription") or ""
-    job_type = raw.get("type") or raw.get("jobType") or raw.get("job_type") or ""
-    industry = raw.get("industry") or raw.get("jobIndustry") or ""
-    location = raw.get("location") or raw.get("jobGeo") or raw.get("candidate_required_location") or ""
-    remote = raw.get("remote") if isinstance(raw.get("remote"), bool) else ("remote" in str(location).lower())
+    title = raw.get("title") or raw.get("jobTitle") or raw.get("name")
+    company = raw.get("company") or raw.get("company_name") or raw.get("companyName")
+    url = raw.get("url") or raw.get("jobUrl") or raw.get("link") or raw.get("apply_url")
+    description = raw.get("description") or raw.get("jobDescription")
+    job_type = raw.get("type") or raw.get("jobType") or raw.get("job_type")
+    industry = raw.get("industry") or raw.get("jobIndustry")
+    location = raw.get("location") or raw.get("jobGeo") or raw.get("candidate_required_location")
+    remote = raw.get("remote") if isinstance(raw.get("remote"), bool) else (location is not None and "remote" in _to_str_or_empty(location).lower())
     pub_date = raw.get("pubDate") or raw.get("publication_date") or raw.get("date") or None
 
     return {
         "source": source,
-        "title": str(title).strip(),
-        "company": str(company).strip(),
-        "url": str(url).strip(),
-        "description": str(description).strip(),
-        "jobType": str(job_type).strip(),
-        "jobIndustry": str(industry).strip(),
-        "location": str(location).strip(),
+        "title": _to_str_or_empty(title),
+        "company": _to_str_or_empty(company),
+        "url": _to_str_or_empty(url),
+        "description": _to_str_or_empty(description),
+        "jobType": _to_str_or_empty(job_type),
+        "jobIndustry": _to_str_or_empty(industry),
+        "location": _to_str_or_empty(location),
         "remote": bool(remote),
         "pubDate": pub_date,
     }
@@ -32,8 +38,8 @@ def normalize_adzuna(raw: Dict, source: str) -> Dict:
     
     # Override with Adzuna-specific fields
     normalized.update({
-        "company": raw.get("company", {}).get("display_name", "") if isinstance(raw.get("company"), dict) else "",
-        "location": raw.get("location", {}).get("display_name", "") if isinstance(raw.get("location"), dict) else "",
+        "company": (raw.get("company") or {}).get("display_name", ""),
+        "location": (raw.get("location") or {}).get("display_name", ""),
         "url": raw.get("redirect_url", normalized["url"]),
     })
     return normalized

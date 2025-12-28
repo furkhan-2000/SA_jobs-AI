@@ -3,19 +3,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-import logging
 
 from .jobs_router import router as jobs_router
 from .cron import start_scheduler
-
-# --------------------------------------------------------
-# Logging Setup
-# --------------------------------------------------------
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-)
-logger = logging.getLogger(__name__)
+from .utils import logger, close_httpx_client
+from .config import settings # Import settings
 
 # --------------------------------------------------------
 # FastAPI App Initialization
@@ -56,13 +48,22 @@ async def log_requests(request: Request, call_next):
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Global error caught: {exc}")
 
-    return JSONResponse(
-        status_code=500,
-        content={
+    # Only expose details in debug mode
+    if settings.DEBUG_MODE:
+        content = {
             "error": "Internal Server Error",
             "details": str(exc),
             "path": str(request.url)
-        },
+        }
+    else:
+        content = {
+            "error": "Internal Server Error",
+            "message": "An unexpected error occurred. Please try again later.",
+            "path": str(request.url)
+        }
+    return JSONResponse(
+        status_code=500,
+        content=content,
     )
 
 # --------------------------------------------------------
@@ -71,6 +72,13 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
+
+# --------------------------------------------------------
+# Root Endpoint - moved before static files to be reachable
+# --------------------------------------------------------
+@app.get("/")
+async def root():
+    return {"status": "alive", "service": "KSA Jobs Backend"}
 
 
 # --------------------------------------------------------
@@ -84,7 +92,7 @@ app.include_router(jobs_router, prefix="/jobs", tags=["Jobs"])
 app.mount("/", StaticFiles(directory="public", html=True), name="public")
 
 # --------------------------------------------------------
-# Scheduler
+# Scheduler Startup
 # --------------------------------------------------------
 @app.on_event("startup")
 async def startup_event():
@@ -92,15 +100,9 @@ async def startup_event():
     start_scheduler()
 
 # --------------------------------------------------------
-# Root Endpoint
+# Shutdown Events
 # --------------------------------------------------------
-@app.get("/")
-async def root():
-    return {"status": "alive", "service": "KSA Jobs Backend"}
-
-
-# --------------------------------------------------------
-# Run - for local debugging only
-# --------------------------------------------------------
-if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info("Shutting down httpx client...")
+    await close_httpx_client()

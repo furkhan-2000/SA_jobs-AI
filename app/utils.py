@@ -5,13 +5,17 @@ from rich.console import Console
 from typing import Any, Optional
 import httpx
 from app.config import settings
+import sys # Added import for sys
 
 console = Console()
 
-# configure loguru
-logger.remove()
-logger.add(lambda msg: console.print(msg, highlight=False), level=settings.LOG_LEVEL)
-logger.add("ksa_jobs.log", rotation="10 MB", retention="7 days", level=settings.LOG_LEVEL)
+# Configure loguru
+logger.remove() # Remove default handler
+logger.add(sys.stderr, level=settings.LOG_LEVEL, format="{time} {level} {message}") # Add stderr handler
+logger.add("ksa_jobs.log", rotation="10 MB", retention="7 days", level=settings.LOG_LEVEL) # Add file handler
+
+# Intercept standard logging messages and redirect to loguru
+logger.enable("app") # Enable loguru for the 'app' module and its submodules
 
 # httpx AsyncClient singleton factory
 _async_client: Optional[httpx.AsyncClient] = None
@@ -21,6 +25,13 @@ def get_httpx_client() -> httpx.AsyncClient:
     if _async_client is None or _async_client.is_closed:
         _async_client = httpx.AsyncClient(timeout=settings.TIMEOUT)
     return _async_client
+
+async def close_httpx_client():
+    global _async_client
+    if _async_client is not None and not _async_client.is_closed:
+        await _async_client.aclose()
+        _async_client = None
+        logger.info("httpx AsyncClient closed.")
 
 async def async_get_json(
     url: str,

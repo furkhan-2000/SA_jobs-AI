@@ -43,7 +43,6 @@ async def fetch_all_jobs() -> List[Dict]:
         ("adzuna", JobAPIClients.fetch_adzuna),
         ("jooble", JobAPIClients.fetch_jooble),
         ("careerjet", JobAPIClients.fetch_careerjet),
-        ("openwebninja", JobAPIClients.fetch_openweb_ninja)
     ]
     tasks = [_run_client(name, fn) for name, fn in clients]
     results = await asyncio.gather(*tasks, return_exceptions=False)
@@ -55,6 +54,11 @@ async def fetch_all_jobs() -> List[Dict]:
     # Add 'dedup_key' to each job and then deduplicate
     unique_jobs = {}
     for job in flattened:
+        # Filter out jobs with empty or invalid URLs before deduplication
+        if not job.get('url') or not (job['url'].startswith('http://') or job['url'].startswith('https://')):
+            logger.warning(f"Skipping job due to invalid/empty URL: {job.get('title')} at {job.get('company')}")
+            continue
+
         # The fingerprint serves as our unique identifier or "dedup_key"
         key = _fingerprint(job)
         if key not in unique_jobs:
