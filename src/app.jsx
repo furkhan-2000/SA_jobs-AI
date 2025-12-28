@@ -26,7 +26,7 @@ export default function App() {
   const [masterJobList, setMasterJobList] = useState([]);
   // State for the jobs currently being displayed. Can be AI-filtered or the master list.
   const [displayJobs, setDisplayJobs] = useState([]);
-  
+
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [isAiPowered, setIsAiPowered] = useState(false);
@@ -70,7 +70,7 @@ export default function App() {
     const controller = new AbortController(); // Create a new AbortController for each effect run
     searchIdRef.current += 1; // Increment for each new search
     const currentSearchId = searchIdRef.current;
-    
+
     const performSearch = async () => {
       if (debouncedKeyword) {
         console.log(`LOG: Debounced search triggered for keyword: '${debouncedKeyword}'`);
@@ -105,16 +105,16 @@ export default function App() {
         setIsAiPowered(false);
       }
     };
-    
+
     performSearch();
-    
+
     // Cleanup function: abort the request if the component unmounts or debouncedKeyword changes
     return () => {
       console.log("LOG: Aborting previous fetch request (cleanup).");
       controller.abort();
     };
-    
-  }, [debouncedKeyword]); // This effect ONLY runs when the debounced keyword changes.
+
+  }, [debouncedKeyword, masterJobList]); // Added masterJobList to dependencies
 
   // 4. This final filtering step applies the dropdown filters (Job Type, Location).
   const finalFilteredJobs = useMemo(() => {
@@ -134,3 +134,54 @@ export default function App() {
       return jobTypeMatch && locationMatch;
     });
   }, [displayJobs, jobTypeFilter, locationFilter, isAiPowered]);
+
+  return (
+    <div className="app">
+      <Header />
+      <main className="container">
+        <SearchFilter
+          keyword={keyword}
+          setKeyword={setKeyword}
+          jobTypeFilter={jobTypeFilter}
+          setJobTypeFilter={setJobTypeFilter}
+          locationFilter={locationFilter}
+          setLocationFilter={setLocationFilter}
+          jobTypes={Object.keys(stats.jobs_per_type || {})}
+          locations={Object.keys(stats.jobs_per_location || {})}
+        />
+        <div className="content">
+          <div className="left">
+            {loading ? (
+              <SkeletonJobList count={5} />
+            ) : finalFilteredJobs.length === 0 ? (
+              <div className="no-results">
+                No jobs found matching your criteria.
+              </div>
+            ) : (
+              <JobList jobs={finalFilteredJobs} />
+            )}
+          </div>
+          <aside className="right">
+            <div className="card stats">
+              <h3>Analytics</h3>
+              <div>Total jobs (found by APIs): {stats.total_jobs || 0}</div>
+              <div style={{ marginTop: 8 }}>
+                <strong>Top companies</strong>
+                <ul className="compact-list">
+                  {Object.entries(stats.jobs_per_company || {})
+                    .slice(0, 6)
+                    .map(([k, v]) => (
+                      <li key={k}>
+                        {k} — {v}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
