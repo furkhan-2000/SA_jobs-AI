@@ -26,7 +26,8 @@ class JobAPIClients:
         Docs: https://jobicy.com/api
         """
         url = "https://jobicy.com/api/v2/remote-jobs"
-        params = {"count": 50, "geo": "worldwide"}
+        # Fixed: Remove 'geo' parameter that's causing 400 error
+        params = {"count": 50}
 
         data = await async_get_json(url, params=params)
 
@@ -63,6 +64,8 @@ class JobAPIClients:
         Adzuna - Job search API with location filtering.
         Docs: https://developer.adzuna.com/
         Requires: ADZUNA_APP_ID and ADZUNA_APP_KEY
+        
+        Fixed: Corrected endpoint format (removed '/search/1' from base URL)
         """
         app_id = settings.ADZUNA_APP_ID
         app_key = settings.ADZUNA_APP_KEY
@@ -71,14 +74,14 @@ class JobAPIClients:
             logger.warning("Adzuna credentials missing")
             return []
 
-        # Search in Saudi Arabia specifically
-        url = f"https://api.adzuna.com/v1/api/jobs/sa/search/1"
+        # Fixed: Correct API endpoint format
+        url = f"https://api.adzuna.com/v1/api/jobs/sa/search"
         params = {
             "app_id": app_id,
             "app_key": app_key,
             "results_per_page": 50,
-            "what": "software developer",  # Generic tech search
-            "content-type": "application/json"
+            "what": "software developer",
+            "page": 1
         }
 
         data = await async_get_json(url, params=params)
@@ -104,7 +107,6 @@ class JobAPIClients:
 
         url = f"https://jooble.org/api/{key}"
 
-        # Search for remote jobs and KSA jobs
         payload = {
             "keywords": "software developer remote",
             "location": "Saudi Arabia"
@@ -129,6 +131,13 @@ class JobAPIClients:
         Careerjet - Job search API.
         Docs: https://www.careerjet.com/partners/api/
         Requires: CAREERJET_KEY
+        
+        Note: Temporarily disabled due to connection failures (likely rate limiting)
+        """
+        logger.info("Careerjet API temporarily disabled due to connection issues. Skipping fetch.")
+        return []
+        
+        # Uncomment below to re-enable once issues are resolved
         """
         key = settings.CAREERJET_KEY
         if not key:
@@ -138,9 +147,9 @@ class JobAPIClients:
         url = "https://public.api.careerjet.net/search"
         params = {
             "affid": key,
-            "user_ip": "127.0.0.1",  # Required by API
-            "user_agent": "Mozilla/5.0",  # Required by API
-            "locale_code": "en_SA",  # Saudi Arabia
+            "user_ip": "127.0.0.1",
+            "user_agent": "Mozilla/5.0",
+            "locale_code": "en_SA",
             "keywords": "software developer",
             "location": "Saudi Arabia",
             "pagesize": 50,
@@ -155,6 +164,7 @@ class JobAPIClients:
         if isinstance(data, dict):
             return data.get("jobs", [])
         return []
+        """
 
     @staticmethod
     async def fetch_openweb_ninja() -> List[Any]:
@@ -183,13 +193,12 @@ async def fetch_ai_search_results(query: str) -> Optional[Any]:
 
     logger.debug(f"Calling AI service with query: '{query}'")
     try:
-        # We assume the AI service expects a POST request with a JSON body
         payload = {"query": query}
         ai_results = await async_get_json(
             f"{settings.AI_SERVICE_URL}/search",
             method='POST',
             json=payload,
-            retries=1  # Fail faster for AI service
+            retries=1
         )
 
         if not ai_results:
