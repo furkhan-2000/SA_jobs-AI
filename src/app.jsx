@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import Header from "./components/Header.jsx";
-import Footer from "./components/Footer.jsx";
+// Header and Footer imports will be removed as they will be redesigned
 import SearchFilter from "./components/SearchFilter.jsx";
 import JobList from "./components/JobList.jsx";
-import SkeletonJobList from "./components/SkeletonJobList.jsx";
+// Removed SkeletonJobList import
 import { fetchJobs } from "./api";
 
 // This custom hook handles the debouncing logic.
@@ -134,34 +133,38 @@ export default function App() {
   }, [displayJobs, jobTypeFilter, isAiPowered]);
 
   return (
-    <div className="app">
-      <Header />
-      <main className="container">
+    <div className="relative flex flex-col min-h-screen overflow-hidden"> {/* Added relative and overflow-hidden */}
+      {/* Parallax Background Layer */}
+      <div className="parallax-bg absolute inset-0 -z-10 bg-cover bg-fixed bg-center" style={{backgroundImage: "url('/public/background.svg')"}}></div> {/* Placeholder for background image */}
+
+      {/* Header will be dynamically rendered here once redesigned */}
+
+      <main className="flex-grow container mx-auto p-4 pt-24"> {/* Added pt-24 for header clearance */}
         <SearchFilter
           keyword={keyword}
           setKeyword={setKeyword}
           jobTypeFilter={jobTypeFilter}
           setJobTypeFilter={setJobTypeFilter}
         />
-        <div className="content">
-          <div className="left">
+        <div className="flex flex-col md:flex-row gap-4 mt-4"> {/* Responsive layout for job list and sidebar */}
+          <div className="flex-grow">
             {loading ? (
-              <SkeletonJobList count={5} />
+              <div className="text-center text-gray-600">Loading…</div>
             ) : finalFilteredJobs.length === 0 ? (
-              <div className="no-results">
+              <div className="text-center text-gray-600">
                 No jobs found matching your criteria.
               </div>
             ) : (
               <JobList jobs={finalFilteredJobs} />
             )}
           </div>
-          <aside className="right">
-            <div className="card stats">
-              <h3>Analytics</h3>
-              <div>Total jobs (found by APIs): {stats.total_jobs || 0}</div>
-              <div style={{ marginTop: 8 }}>
-                <strong>Top companies</strong>
-                <ul className="compact-list">
+          <aside className="md:w-1/4"> {/* Placeholder for the new analytics sidebar */}
+            <div className="card glass-ui p-4 rounded-lg"> {/* Apply glass-ui to the card */}
+              <h3 className="font-bold text-lg mb-2 text-gray-800">Analytics</h3>
+              <div className="text-gray-700">Total jobs (found by APIs): {stats.total_jobs || 0}</div>
+              <div className="mt-2">
+                <strong className="text-gray-800">Top companies</strong>
+                <ul className="text-gray-700 text-sm">
                   {Object.entries(stats.jobs_per_company || {})
                     .slice(0, 6)
                     .map(([k, v]) => (
@@ -175,7 +178,7 @@ export default function App() {
           </aside>
         </div>
       </main>
-      <Footer />
+      {/* Footer will be dynamically rendered here once redesigned */}
     </div>
   );
 }

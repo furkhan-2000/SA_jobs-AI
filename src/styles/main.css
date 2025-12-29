@@ -1,171 +1,72 @@
-body {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth; /* Added for smooth scrolling */
+}
+
+body, html, #root {
+    height: 100%;
     margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    color: #222;
+    font-family: Inter, sans-serif;
+    background: #e8edf5; /* From mainpage.html */
+    /* Ensure the body itself doesn't scroll so the main div can handle it for parallax */
+    overflow-x: hidden;
 }
 
-header, footer {
-    background: #0a2342;
-    color: #fff;
-    padding: 16px;
-    text-align: center;
+/* Style for the parallax background layer */
+.parallax-bg {
+  /* Using a subtle gradient for now, can be replaced with an image */
+  background-image: linear-gradient(to bottom right, #e8edf5, #dbe4ef);
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  /* Ensure it covers the whole screen and stays behind content */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed; /* Fixed for true parallax effect relative to viewport */
+  z-index: -10; /* Keep it behind all other content */
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 20px 0;
-}
 
-button {
-    padding: 8px 14px;
-    border: none;
-    background: #0a2342;
-    color: white;
-    cursor: pointer;
-    border-radius: 6px;
-}
+/* ================= APPLE VISION PRO / iPhone 17 GLASS UI REIMAGINED ================= */
 
-button:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
+/* Universal Glass Properties */
+.glass-ui {
+  backdrop-filter: blur(35px) saturate(140%) brightness(1.2);
+  -webkit-backdrop-filter: blur(35px) saturate(140%) brightness(1.2);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 25px 50px -10px rgba(0, 0, 0, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.search-filter {
-    margin: 20px 0;
-    display: flex;
-    gap: 10px;
+.glass-ui::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  opacity: 0.7;
 }
-
-/* Skeleton Loader Styles */
-.job-card.skeleton {
-    background-color: #e0e0e0;
-    border-color: #d0d0d0;
-    animation: pulse 1.5s infinite ease-in-out;
+.glass-ui::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -200%;
+  width: 150%;
+  height: 200%;
+  transform: skewX(-25deg);
+  background-image: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08), transparent);
+  transition: left 1s cubic-bezier(0.23, 1, 0.32, 1);
 }
-
-.job-card.skeleton .skeleton-line {
-    background-color: #c0c0c0;
-    border-radius: 4px;
-    margin-bottom: 8px;
-    height: 14px;
-}
-
-.job-card.skeleton .skeleton-title {
-    width: 70%;
-    height: 20px;
-}
-
-.job-card.skeleton .skeleton-company {
-    width: 50%;
-}
-
-.job-card.skeleton .skeleton-location {
-    width: 60%;
-}
-
-.job-card.skeleton .skeleton-button {
-    width: 30%;
-    height: 30px;
-    margin-top: 16px;
-}
-
-@keyframes pulse {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
-/* Enhanced Job Card Styles */
-.job-card {
-    background: #ffffff;
-    padding: 16px;
-    margin: 10px 0;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.job-card:hover {
-    background: #f1f5f9;
-}
-
-.job-title {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.job-company {
-    color: #555;
-}
-
-.job-card-header .job-title {
-    margin: 0;
-}
-
-.job-card-header .job-company {
-    margin: 4px 0;
-    color: #666;
-}
-
-.job-card-details {
-    margin: 12px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-}
-
-.badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.job-type-badge {
-    background-color: #e0f2f1;
-    color: #00796b;
-}
-
-.remote-badge {
-    background-color: #e3f2fd;
-    color: #1565c0;
-}
-
-.job-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 12px;
-}
-
-.job-link-button {
-    background-color: #0a2342;
-    color: #fff;
-    padding: 8px 16px;
-    text-decoration: none;
-    border-radius: 6px;
-    transition: background-color 0.3s;
-}
-
-.job-link-button:hover {
-    background-color: #004d80;
-}
-
-.job-source {
-    font-size: 12px;
-    color: #999;
+.glass-ui:hover::after {
+  left: 200%;
 }
