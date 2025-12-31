@@ -75,13 +75,12 @@ class JobAPIClients:
             return []
 
         # Fixed: Correct API endpoint format
-        url = f"https://api.adzuna.com/v1/api/jobs/sa/search"
+        url = f"https://api.adzuna.com/v1/api/jobs/sa/search/1"
         params = {
             "app_id": app_id,
             "app_key": app_key,
             "results_per_page": 50,
             "what": "software developer",
-            "page": 1
         }
 
         data = await async_get_json(url, params=params)

@@ -66,6 +66,7 @@ body, html, #root {
   transform: skewX(-25deg);
   background-image: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08), transparent);
   transition: left 1s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;  /* ADD THIS LINE */
 }
 .glass-ui:hover::after {
   left: 200%;

@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-// Header and Footer imports will be removed as they will be redesigned
+import Header from "./components/Header.jsx";
+import Footer from "./components/Footer.jsx";
 import SearchFilter from "./components/SearchFilter.jsx";
 import JobList from "./components/JobList.jsx";
-// Removed SkeletonJobList import
+import SkeletonJobList from "./components/SkeletonJobList.jsx";
 import { fetchJobs } from "./api";
 
 // This custom hook handles the debouncing logic.
@@ -38,6 +39,11 @@ export default function App() {
   // Debounced keyword state. This will only update after the user stops typing.
   const debouncedKeyword = useDebounce(keyword, 500);
   const searchIdRef = useRef(0); // Ref to track search requests
+  const [searchTrigger, setSearchTrigger] = useState(0);
+
+  const handleSearchClick = () => {
+    setSearchTrigger(t => t + 1);
+  };
 
   // 1. Fetches the initial master list of all jobs on component mount.
   async function loadInitialJobs() {
@@ -113,7 +119,7 @@ export default function App() {
       controller.abort();
     };
 
-  }, [debouncedKeyword, masterJobList]); // Added masterJobList to dependencies
+  }, [debouncedKeyword, masterJobList, searchTrigger]); // Added masterJobList to dependencies
 
   // 4. This final filtering step applies the dropdown filters (Job Type, Location).
   const finalFilteredJobs = useMemo(() => {
@@ -135,21 +141,22 @@ export default function App() {
   return (
     <div className="relative flex flex-col min-h-screen overflow-hidden"> {/* Added relative and overflow-hidden */}
       {/* Parallax Background Layer */}
-      <div className="parallax-bg absolute inset-0 -z-10 bg-cover bg-fixed bg-center" style={{backgroundImage: "url('/public/background.svg')"}}></div> {/* Placeholder for background image */}
+      <div className="parallax-bg absolute inset-0 -z-10 bg-cover bg-fixed bg-center" style={{backgroundImage: "url('/background.svg')"}}></div> {/* Placeholder for background image */}
 
-      {/* Header will be dynamically rendered here once redesigned */}
+      <Header />
 
-      <main className="flex-grow container mx-auto p-4 pt-24"> {/* Added pt-24 for header clearance */}
+      <main className="flex-grow container mx-auto p-4 pt-24 max-w-7xl"> {/* Added pt-24 for header clearance */}
         <SearchFilter
           keyword={keyword}
           setKeyword={setKeyword}
           jobTypeFilter={jobTypeFilter}
           setJobTypeFilter={setJobTypeFilter}
+          onSearchClick={handleSearchClick}
         />
         <div className="flex flex-col md:flex-row gap-4 mt-4"> {/* Responsive layout for job list and sidebar */}
           <div className="flex-grow">
             {loading ? (
-              <div className="text-center text-gray-600">Loading…</div>
+              <SkeletonJobList />
             ) : finalFilteredJobs.length === 0 ? (
               <div className="text-center text-gray-600">
                 No jobs found matching your criteria.
@@ -178,7 +185,7 @@ export default function App() {
           </aside>
         </div>
       </main>
-      {/* Footer will be dynamically rendered here once redesigned */}
+      <Footer />
     </div>
   );
 }

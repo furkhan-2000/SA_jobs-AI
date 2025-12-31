@@ -3,6 +3,7 @@ import React from 'react';
 export default function SearchFilter({
     keyword, setKeyword,
     jobTypeFilter, setJobTypeFilter,
+    onSearchClick,
 }) {
     return (
         <div className="search-bar glass-ui mx-auto flex items-center gap-2 mt-8 rounded-full p-1 max-w-2xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl">
@@ -27,7 +28,7 @@ export default function SearchFilter({
                 <option value="Remote">Remote</option>
             </select>
             <button
-                // onClick={onSearch} // onSearch is no longer a prop or needed here directly due to debouncing
+                onClick={onSearchClick}
                 className="cta-button font-bold py-2 px-5 rounded-full bg-gray-800 text-white shadow-md hover:bg-gray-700 transition-colors duration-200 hover:scale-105 hover:shadow-xl" // Enhanced hover
             >
                 Search
