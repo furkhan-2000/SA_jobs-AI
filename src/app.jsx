@@ -1,6 +1,4 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import Header from "./components/Header.jsx";  // ← ADD THIS
-import Footer from "./components/Footer.jsx";  // ← ADD THIS
 import SearchFilter from "./components/SearchFilter.jsx";
 import JobList from "./components/JobList.jsx";
 import { fetchJobs } from "./api";
@@ -112,13 +110,7 @@ export default function App() {
 
   return (
     <div className="relative flex flex-col min-h-screen overflow-hidden">
-      {/* FIXED: Removed broken background image */}
-      <div className="parallax-bg absolute inset-0 -z-10"></div>
-
-      {/* FIXED: Actually render Header */}
-      <Header />
-
-      <main className="flex-grow container mx-auto p-4 pt-24 max-w-7xl">
+      <main className="flex-grow container mx-auto p-4 pt-8 max-w-7xl">
         <SearchFilter
           keyword={keyword}
           setKeyword={setKeyword}
@@ -157,9 +149,6 @@ export default function App() {
           </aside>
         </div>
       </main>
-
-      {/* FIXED: Actually render Footer */}
-      <Footer />
     </div>
   );
 }
