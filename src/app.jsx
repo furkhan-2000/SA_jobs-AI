@@ -24,7 +24,7 @@ export default function App() {
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [isAiPowered, setIsAiPowered] = useState(false);
-  const [keyword, setKeyword]_ = useState("");
+  const [keyword, setKeyword] = useState("");
   const [jobTypeFilter, setJobTypeFilter] = useState("On-site KSA");
   const debouncedKeyword = useDebounce(keyword, 500);
   const searchIdRef = useRef(0);
