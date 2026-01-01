@@ -61,11 +61,12 @@ class JobAPIClients:
     @staticmethod
     async def fetch_adzuna() -> List[Any]:
         """
-        Adzuna - Job search API with location filtering.
-        Docs: https://developer.adzuna.com/
-        Requires: ADZUNA_APP_ID and ADZUNA_APP_KEY
+        Adzuna API - Currently disabled due to 404 errors
+        """
+        logger.warning("Adzuna API temporarily disabled due to endpoint issues")
+        return []
         
-        Fixed: Corrected endpoint format (removed '/search/1' from base URL)
+        # Uncomment and fix when you have valid credentials:
         """
         app_id = settings.ADZUNA_APP_ID
         app_key = settings.ADZUNA_APP_KEY
@@ -74,23 +75,21 @@ class JobAPIClients:
             logger.warning("Adzuna credentials missing")
             return []
 
-        # Fixed: Correct API endpoint format
-        url = f"https://api.adzuna.com/v1/api/jobs/sa/search/1"
+        # Try different country codes: us, gb, de, etc.
+        url = f"https://api.adzuna.com/v1/api/jobs/us/search/1"
         params = {
             "app_id": app_id,
             "app_key": app_key,
             "results_per_page": 50,
-            "what": "software developer",
+            "what": "software developer remote",
         }
 
         data = await async_get_json(url, params=params)
-
-        if settings.DEBUG_MODE and data:
-            logger.debug(f"Adzuna raw data sample: {data.get('results', [])[:1] if isinstance(data, dict) else []}")
-
+        
         if isinstance(data, dict):
             return data.get("results", [])
         return []
+        """
 
     @staticmethod
     async def fetch_jooble() -> List[Any]:
