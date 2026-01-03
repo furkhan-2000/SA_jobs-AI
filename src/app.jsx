@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import SearchFilter from "./components/SearchFilter.jsx";
 import JobList from "./components/JobList.jsx";
+import SkeletonJobList from "./components/SkeletonJobList.jsx";
 import { fetchJobs } from "./api";
 
 function useDebounce(value, delay) {
@@ -117,7 +118,7 @@ export default function App() {
         <div className="mt-4">
           <div className="flex-grow">
             {loading ? (
-              <div className="text-center text-gray-600">Loading…</div>
+              <SkeletonJobList />
             ) : finalFilteredJobs.length === 0 ? (
               <div className="text-center text-gray-600">
                 No jobs found matching your criteria.

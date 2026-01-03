@@ -2,7 +2,7 @@ import React from "react";
 
 export default function JobCard({ job }) {
   return (
-    <div className="job-card glass-ui p-6 rounded-xl transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col justify-between h-full">
+    <div className="job-card glass-ui">
       <div className="job-card-header">
         <h3 className="text-xl font-bold text-gray-800 mb-2">{job.title}</h3>
         <p className="text-gray-700 text-base mb-1">{job.company}</p>
@@ -25,7 +25,7 @@ export default function JobCard({ job }) {
           href={job.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block px-5 py-2 bg-gray-800 text-white font-semibold rounded-full shadow-md hover:bg-gray-700 transition-colors duration-200 text-sm"
+          className="inline-block px-5 py-2 bg-purple-600 text-white font-semibold rounded-full shadow-md hover:bg-purple-700 transition-colors duration-200 text-sm"
         >
           View Job
         </a>
