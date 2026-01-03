@@ -19,7 +19,6 @@ function useDebounce(value, delay) {
 export default function App() {
   const [masterJobList, setMasterJobList] = useState([]);
   const [displayJobs, setDisplayJobs] = useState([]);
-  const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [isAiPowered, setIsAiPowered] = useState(false);
   const [keyword, setKeyword] = useState("");
@@ -34,7 +33,6 @@ export default function App() {
       const res = await fetchJobs();
       setMasterJobList(res.jobs || []);
       setDisplayJobs(res.jobs || []);
-      setStats(res.stats || {});
       setIsAiPowered(false);
       console.log(`LOG: Master job list loaded with ${res.jobs?.length || 0} jobs.`);
     } catch (error) {
@@ -63,7 +61,6 @@ export default function App() {
           const res = await fetchJobs(debouncedKeyword, controller.signal);
           if (currentSearchId === searchIdRef.current) {
             setDisplayJobs(res.jobs || []);
-            setStats(res.stats || {});
             setIsAiPowered(res.ai_powered);
             console.log(`LOG: Search complete. AI powered: ${res.ai_powered}. Found ${res.jobs?.length} jobs.`);
           } else {
@@ -117,7 +114,7 @@ export default function App() {
           jobTypeFilter={jobTypeFilter}
           setJobTypeFilter={setJobTypeFilter}
         />
-        <div className="flex flex-col md:flex-row gap-4 mt-4">
+        <div className="mt-4">
           <div className="flex-grow">
             {loading ? (
               <div className="text-center text-gray-600">Loading…</div>
@@ -129,24 +126,6 @@ export default function App() {
               <JobList jobs={finalFilteredJobs} />
             )}
           </div>
-          <aside className="md:w-1/4">
-            <div className="card glass-ui p-4 rounded-lg">
-              <h3 className="font-bold text-lg mb-2 text-gray-800">Analytics</h3>
-              <div className="text-gray-700">Total jobs (found by APIs): {stats.total_jobs || 0}</div>
-              <div className="mt-2">
-                <strong className="text-gray-800">Top companies</strong>
-                <ul className="text-gray-700 text-sm">
-                  {Object.entries(stats.jobs_per_company || {})
-                    .slice(0, 6)
-                    .map(([k, v]) => (
-                      <li key={k}>
-                        {k} — {v}
-                      </li>
-                    ))}
-                </ul>
-              </div>
-            </div>
-          </aside>
         </div>
       </main>
     </div>
